@@ -2,6 +2,7 @@ import "@/app/globals.css"
 import { AuthProvider } from "@/context/auth-context"
 
 export const metadata = {
+  metadataBase: new URL("https://heavenlychat-px42.onrender.com"),
   title: "HeavenlyChat",
   description: "No rules free for all chat",
   icons: {
@@ -9,6 +10,12 @@ export const metadata = {
     apple: "/icon.png",
   },
   openGraph: {
+    title: "HeavenlyChat",
+    description: "No rules free for all chat",
+    images: ["/icon.png"],
+  },
+  twitter: {
+    card: "summary",
     title: "HeavenlyChat",
     description: "No rules free for all chat",
     images: ["/icon.png"],
