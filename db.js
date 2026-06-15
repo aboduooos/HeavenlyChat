@@ -52,6 +52,7 @@ if (process.env.DATABASE_URL) {
     CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
     CREATE INDEX IF NOT EXISTS idx_messages_username ON messages(username);
   `)
+  try { db.exec(`ALTER TABLE users ADD COLUMN IF NOT EXISTS text_color VARCHAR(7) DEFAULT '#e5e5e5'`) } catch (e) {}
 } else {
   const Database = require("better-sqlite3")
   db = new Database(path.join(__dirname, "chat.db"))
