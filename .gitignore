@@ -4,3 +4,4 @@ out
 chat.db
 uploads
 .env.local
+PROJECT_INFO.txt

@@ -15,13 +15,17 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const t = localStorage.getItem("token")
-    const u = localStorage.getItem("username")
-    const a = localStorage.getItem("avatar")
-    if (t && u) {
-      setToken(t)
-      setUsername(u)
-      if (a) setAvatar(a)
+    try {
+      const t = localStorage.getItem("token")
+      const u = localStorage.getItem("username")
+      const a = localStorage.getItem("avatar")
+      if (t && u) {
+        setToken(t)
+        setUsername(u)
+        if (a) setAvatar(a)
+      }
+    } catch (e) {
+      console.warn("localStorage not available:", e.message)
     }
     setLoading(false)
   }, [])
@@ -34,9 +38,7 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error)
-    localStorage.setItem("token", data.token)
-    localStorage.setItem("username", data.username)
-    if (data.avatar) localStorage.setItem("avatar", data.avatar)
+    try { localStorage.setItem("token", data.token); localStorage.setItem("username", data.username); if (data.avatar) localStorage.setItem("avatar", data.avatar) } catch (e) {}
     setToken(data.token)
     setUsername(data.username)
     setAvatar(data.avatar || null)
@@ -50,9 +52,7 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error)
-    localStorage.setItem("token", data.token)
-    localStorage.setItem("username", data.username)
-    if (data.avatar) localStorage.setItem("avatar", data.avatar)
+    try { localStorage.setItem("token", data.token); localStorage.setItem("username", data.username); if (data.avatar) localStorage.setItem("avatar", data.avatar) } catch (e) {}
     setToken(data.token)
     setUsername(data.username)
     setAvatar(data.avatar || null)
@@ -69,8 +69,7 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error)
-    localStorage.setItem("token", data.token)
-    localStorage.setItem("username", data.username)
+    try { localStorage.setItem("token", data.token); localStorage.setItem("username", data.username) } catch (e) {}
     setToken(data.token)
     setUsername(data.username)
   }
@@ -87,15 +86,13 @@ export function AuthProvider({ children }) {
     const data = await res.json()
     if (!res.ok) throw new Error(data.error)
     if (data.avatar) {
-      localStorage.setItem("avatar", data.avatar)
+      try { localStorage.setItem("avatar", data.avatar) } catch (e) {}
       setAvatar(data.avatar)
     }
   }
 
   function logout() {
-    localStorage.removeItem("token")
-    localStorage.removeItem("username")
-    localStorage.removeItem("avatar")
+    try { localStorage.removeItem("token"); localStorage.removeItem("username"); localStorage.removeItem("avatar") } catch (e) {}
     setToken(null)
     setUsername(null)
     setAvatar(null)
