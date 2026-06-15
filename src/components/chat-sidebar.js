@@ -21,15 +21,15 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
       display: "flex", flexDirection: "column", position: "relative",
     }}>
       <div style={{
-        padding: "1rem", borderBottom: "1px solid #2a2a2a",
+        padding: "1.25rem", borderBottom: "1px solid #2a2a2a",
         display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          <AvatarCircle avatar={fullUrl(avatar)} username={username} size={32} />
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <AvatarCircle avatar={fullUrl(avatar)} username={username} size={34} />
           <div>
-            <p style={{ fontWeight: "bold", fontSize: "0.85rem", background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>HeavenlyChat</p>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-              <p style={{ color: textColor || "#2563eb", fontSize: "0.75rem" }}>{username}</p>
+            <p style={{ fontWeight: "bold", fontSize: "0.9rem", background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>HeavenlyChat</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+              <p style={{ color: textColor || "#2563eb", fontSize: "0.8rem" }}>{username}</p>
               <div onClick={() => setShowColors(!showColors)} style={{
                 width: "10px", height: "10px", borderRadius: "50%",
                 background: textColor || "#2563eb", cursor: "pointer",
@@ -38,12 +38,12 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "0.25rem" }}>
+        <div style={{ display: "flex", gap: "0.35rem" }}>
           <button onClick={onSettings} title="Settings" style={{
             background: "none", border: "none", color: "#999", cursor: "pointer",
-            padding: "0.25rem", display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "0.35rem", display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
@@ -51,7 +51,7 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
           {onClose && (
             <button onClick={onClose} style={{
               background: "none", border: "none", color: "#999", cursor: "pointer",
-              padding: "0.25rem", fontSize: "1.1rem",
+              padding: "0.35rem", fontSize: "1.2rem",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               ✕
@@ -62,7 +62,7 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
 
       {showColors && (
         <div style={{
-          position: "absolute", top: "4.2rem", left: "1rem", zIndex: 70,
+          position: "absolute", top: "5rem", left: "1.25rem", zIndex: 70,
           background: "#1a1a1a", border: "1px solid #333", borderRadius: "8px",
           padding: "0.6rem", display: "flex", flexWrap: "wrap", gap: "0.35rem",
           width: "140px",
@@ -76,11 +76,11 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
         </div>
       )}
 
-      <div style={{ padding: "1rem", flex: 1, overflowY: "auto" }}>
+      <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto" }}>
         <p style={{ color: "#999", fontSize: "0.8rem", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Online &mdash; {users.length}
         </p>
-        <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.65rem" }}>
           {users.map(u => (
               <li key={u.username} style={{
                 display: "flex", alignItems: "center", gap: "0.5rem",
