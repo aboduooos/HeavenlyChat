@@ -38,6 +38,7 @@ if (process.env.DATABASE_URL) {
       username VARCHAR(255) UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       avatar TEXT,
+      text_color VARCHAR(7) DEFAULT '#e5e5e5',
       created_at TIMESTAMP DEFAULT NOW()
     );
     CREATE TABLE IF NOT EXISTS messages (
@@ -61,6 +62,7 @@ if (process.env.DATABASE_URL) {
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       avatar TEXT,
+      text_color TEXT DEFAULT '#e5e5e5',
       created_at TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS messages (
@@ -76,17 +78,18 @@ if (process.env.DATABASE_URL) {
   `)
 
   try { db.exec("ALTER TABLE users ADD COLUMN avatar TEXT") } catch (e) {}
+  try { db.exec("ALTER TABLE users ADD COLUMN text_color TEXT DEFAULT '#e5e5e5'") } catch (e) {}
   try { db.exec("ALTER TABLE messages ADD COLUMN type TEXT NOT NULL DEFAULT 'text'") } catch (e) {}
   try { db.exec("ALTER TABLE messages ADD COLUMN media TEXT") } catch (e) {}
 }
 
-async function createUser(username, passwordHash, avatar) {
+async function createUser(username, passwordHash, avatar, textColor) {
   if (process.env.DATABASE_URL) {
-    const r = await db.run("INSERT INTO users (username, password_hash, avatar) VALUES ($1, $2, $3)", [username, passwordHash, avatar || null])
+    const r = await db.run("INSERT INTO users (username, password_hash, avatar, text_color) VALUES ($1, $2, $3, $4)", [username, passwordHash, avatar || null, textColor || '#e5e5e5'])
     return r
   } else {
-    const stmt = db.prepare("INSERT INTO users (username, password_hash, avatar) VALUES (?, ?, ?)")
-    return stmt.run(username, passwordHash, avatar || null)
+    const stmt = db.prepare("INSERT INTO users (username, password_hash, avatar, text_color) VALUES (?, ?, ?, ?)")
+    return stmt.run(username, passwordHash, avatar || null, textColor || '#e5e5e5')
   }
 }
 
@@ -116,6 +119,15 @@ async function updateAvatar(username, avatar) {
   }
 }
 
+async function updateTextColor(username, textColor) {
+  if (process.env.DATABASE_URL) {
+    return await db.run("UPDATE users SET text_color = $1 WHERE username = $2", [textColor, username])
+  } else {
+    const stmt = db.prepare("UPDATE users SET text_color = ? WHERE username = ?")
+    return stmt.run(textColor, username)
+  }
+}
+
 async function saveMessage(username, content, type = "text", media = null) {
   if (process.env.DATABASE_URL) {
     return await db.run("INSERT INTO messages (username, content, type, media) VALUES ($1, $2, $3, $4)", [username, content, type, media])
@@ -128,14 +140,14 @@ async function saveMessage(username, content, type = "text", media = null) {
 async function getRecentMessages() {
   if (process.env.DATABASE_URL) {
     return await db.all(`
-      SELECT m.id, m.username, m.content, m.type, m.media, m.created_at, u.avatar
+      SELECT m.id, m.username, m.content, m.type, m.media, m.created_at, u.avatar, u.text_color AS "textColor"
       FROM messages m
       LEFT JOIN users u ON m.username = u.username
       ORDER BY m.created_at ASC
     `)
   } else {
     return db.prepare(`
-      SELECT m.id, m.username, m.content, m.type, m.media, m.created_at, u.avatar
+      SELECT m.id, m.username, m.content, m.type, m.media, m.created_at, u.avatar, u.text_color AS "textColor"
       FROM messages m
       LEFT JOIN users u ON m.username = u.username
       ORDER BY m.created_at ASC
@@ -151,4 +163,4 @@ async function clearMessages() {
   }
 }
 
-module.exports = { createUser, getUserByUsername, updateUsername, updateAvatar, saveMessage, getRecentMessages, clearMessages }
+module.exports = { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages }

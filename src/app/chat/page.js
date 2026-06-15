@@ -10,7 +10,7 @@ import MessageInput from "@/components/message-input"
 import SettingsPanel from "@/components/settings-panel"
 
 export default function Chat() {
-  const { token, username, avatar, loading, logout } = useAuth()
+  const { token, username, avatar, textColor, loading, logout } = useAuth()
   const router = useRouter()
   const [messages, setMessages] = useState([])
   const [users, setUsers] = useState([])
@@ -161,6 +161,7 @@ export default function Chat() {
           users={users}
           username={username}
           avatar={avatar}
+          textColor={textColor}
           onLogout={handleLogout}
           onSettings={() => { setSettingsOpen(true); setSidebarOpen(false) }}
           onClose={mobile ? () => setSidebarOpen(false) : undefined}

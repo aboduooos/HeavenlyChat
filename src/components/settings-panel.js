@@ -305,12 +305,14 @@ function CropModal({ src, onCrop, onCancel }) {
 }
 
 export default function SettingsPanel({ onClose }) {
-  const { username, avatar, updateUsername, updateAvatar } = useAuth()
+  const { username, avatar, textColor, updateUsername, updateAvatar, updateTextColor } = useAuth()
   const [newName, setNewName] = useState(username || "")
   const [error, setError] = useState("")
   const [saving, setSaving] = useState(false)
   const [preview, setPreview] = useState(avatar)
   const [cropSrc, setCropSrc] = useState(null)
+  const [selectedColor, setSelectedColor] = useState(textColor || '#e5e5e5')
+  const [colorSaving, setColorSaving] = useState(false)
   const fileRef = useRef(null)
 
   async function handleSaveUsername() {
@@ -354,6 +356,20 @@ export default function SettingsPanel({ onClose }) {
       setError(err.message)
     }
     setSaving(false)
+  }
+
+  const presetColors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#c084fc', '#fb7185', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6', '#2dd4bf']
+
+  async function handleSaveColor() {
+    if (selectedColor === textColor) return
+    setColorSaving(true)
+    setError("")
+    try {
+      await updateTextColor(selectedColor)
+    } catch (err) {
+      setError(err.message)
+    }
+    setColorSaving(false)
   }
 
   return (
@@ -405,6 +421,39 @@ export default function SettingsPanel({ onClose }) {
             fontSize: "0.85rem",
           }}>
             {saving ? "..." : "Save"}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ marginTop: "1.5rem" }}>
+        <p style={{ color: "#999", fontSize: "0.8rem", marginBottom: "0.5rem" }}>Text Color</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.75rem" }}>
+          {presetColors.map(c => (
+            <div key={c} onClick={() => setSelectedColor(c)} style={{
+              width: "28px", height: "28px", borderRadius: "50%", background: c,
+              cursor: "pointer", border: selectedColor === c ? "2px solid #fff" : "2px solid transparent",
+              transition: "border 0.15s",
+            }} />
+          ))}
+          <input type="color" value={selectedColor} onChange={e => setSelectedColor(e.target.value)}
+            style={{ width: "28px", height: "28px", borderRadius: "50%", cursor: "pointer", background: "none", border: "none", padding: 0 }} />
+        </div>
+        <div style={{
+          padding: "0.45rem 0.85rem", borderRadius: "8px", background: "#2a2a2a",
+          display: "inline-block", marginBottom: "0.75rem",
+        }}>
+          <span style={{ color: selectedColor, fontSize: "0.9rem", fontWeight: "bold" }}>
+            {username || "Preview"}
+          </span>
+        </div>
+        <div>
+          <button onClick={handleSaveColor} disabled={colorSaving || selectedColor === textColor} style={{
+            padding: "0.5rem 1rem", borderRadius: "4px",
+            background: selectedColor !== textColor ? "#2563eb" : "#1a3a6e",
+            color: "#fff", border: "none", cursor: selectedColor !== textColor ? "pointer" : "default",
+            fontSize: "0.85rem",
+          }}>
+            {colorSaving ? "..." : "Save Color"}
           </button>
         </div>
       </div>

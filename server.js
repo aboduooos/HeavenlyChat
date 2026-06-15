@@ -7,7 +7,7 @@ const { Server } = require("socket.io")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const cloudinary = require("cloudinary").v2
-const { createUser, getUserByUsername, updateUsername, updateAvatar, saveMessage, getRecentMessages, clearMessages } = require("./db")
+const { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages } = require("./db")
 
 const JWT_SECRET = process.env.JWT_SECRET || (() => { console.warn("WARNING: using default JWT_SECRET, set JWT_SECRET env var"); return "chatweb-secret-key-change-in-production" })()
 const PORT = process.env.PORT || 3000
@@ -48,6 +48,20 @@ function verifyToken(authHeader) {
   }
 }
 
+function randomTextColor() {
+  const h = Math.floor(Math.random() * 360)
+  const s = 55 + Math.floor(Math.random() * 25)
+  const l = 55 + Math.floor(Math.random() * 20)
+  s /= 100; l /= 100
+  const a = s * Math.min(l, 1 - l)
+  const f = (n) => {
+    const k = (n + h / 30) % 12
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+    return Math.round(255 * color).toString(16).padStart(2, '0')
+  }
+  return `#${f(0)}${f(8)}${f(4)}`
+}
+
 app.post("/api/signup", async (req, res) => {
   const { username, password, avatar } = req.body
   if (!username || !password) {
@@ -70,11 +84,12 @@ app.post("/api/signup", async (req, res) => {
     savedAvatar = await saveBase64File(avatar)
   }
 
+  const textColor = randomTextColor()
   const hash = bcrypt.hashSync(password, 10)
-  await createUser(username, hash, savedAvatar)
+  await createUser(username, hash, savedAvatar, textColor)
 
   const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "7d" })
-  res.json({ token, username, avatar: savedAvatar })
+  res.json({ token, username, avatar: savedAvatar, textColor })
 })
 
 app.post("/api/login", async (req, res) => {
@@ -94,7 +109,7 @@ app.post("/api/login", async (req, res) => {
   }
 
   const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "7d" })
-  res.json({ token, username, avatar: user.avatar || null })
+  res.json({ token, username, avatar: user.avatar || null, textColor: user.text_color || '#e5e5e5' })
 })
 
 app.post("/api/guest", async (req, res) => {
@@ -112,9 +127,10 @@ app.post("/api/guest", async (req, res) => {
   }
   if (!username) return res.status(500).json({ error: "Could not generate unique username" })
 
-  await createUser(username, "", null)
+  const textColor = randomTextColor()
+  await createUser(username, "", null, textColor)
   const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "1d" })
-  res.json({ token, username, avatar: null })
+  res.json({ token, username, avatar: null, textColor })
 })
 
 app.get("/api/me", async (req, res) => {
@@ -124,7 +140,7 @@ app.get("/api/me", async (req, res) => {
   const user = await getUserByUsername(decoded.username)
   if (!user) return res.status(404).json({ error: "User not found" })
 
-  res.json({ username: user.username, avatar: user.avatar || null })
+  res.json({ username: user.username, avatar: user.avatar || null, textColor: user.text_color || '#e5e5e5' })
 })
 
 app.post("/api/update-username", async (req, res) => {
@@ -169,6 +185,19 @@ app.get("/api/messages", async (req, res) => {
   }
 
   res.json(await getRecentMessages())
+})
+
+app.post("/api/update-color", async (req, res) => {
+  const decoded = verifyToken(req.headers.authorization)
+  if (!decoded) return res.status(401).json({ error: "Invalid token" })
+
+  const { textColor } = req.body
+  if (!textColor || !/^#[0-9a-fA-F]{6}$/.test(textColor)) {
+    return res.status(400).json({ error: "Invalid color format. Use hex like #ff6b6b" })
+  }
+
+  await updateTextColor(decoded.username, textColor)
+  res.json({ textColor })
 })
 
 app.post("/api/upload", async (req, res) => {
@@ -218,10 +247,12 @@ io.on("connection", async (socket) => {
 
   const user = await getUserByUsername(username)
   const avatar = user?.avatar || null
+  const textColor = user?.text_color || '#e5e5e5'
 
   socket.data.username = username
   socket.data.avatar = avatar
-  onlineUsers[username] = { username, avatar }
+  socket.data.textColor = textColor
+  onlineUsers[username] = { username, avatar, textColor }
   socket.join("general")
 
   socket.emit("messages", await getRecentMessages())
@@ -257,6 +288,7 @@ io.on("connection", async (socket) => {
       type,
       media,
       avatar,
+      textColor,
       created_at: new Date().toISOString(),
     }
     io.to("general").emit("new_message", msg)

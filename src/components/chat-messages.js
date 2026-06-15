@@ -122,7 +122,7 @@ export default function ChatMessages({ messages, username }) {
             {!isMine && !showAvatar && <div style={{ width: 28, flexShrink: 0 }} />}
             <div style={{ maxWidth: "75%" }}>
               {!isMine && showName && (
-                <p style={{ color: "#888", fontSize: "0.7rem", marginBottom: "0.1rem", marginLeft: "0.25rem" }}>
+                <p style={{ color: m.textColor || "#888", fontSize: "0.7rem", marginBottom: "0.1rem", marginLeft: "0.25rem" }}>
                   {m.username}
                 </p>
               )}

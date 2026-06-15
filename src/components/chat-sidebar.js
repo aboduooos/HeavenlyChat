@@ -9,7 +9,7 @@ function fullUrl(path) {
   return path
 }
 
-export default function ChatSidebar({ users, username, avatar, onLogout, onSettings, onClose }) {
+export default function ChatSidebar({ users, username, avatar, textColor, onLogout, onSettings, onClose }) {
   const [previewUser, setPreviewUser] = useState(null)
 
   return (
@@ -26,7 +26,7 @@ export default function ChatSidebar({ users, username, avatar, onLogout, onSetti
           <AvatarCircle avatar={fullUrl(avatar)} username={username} size={32} />
           <div>
             <p style={{ fontWeight: "bold", fontSize: "0.85rem", background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>HeavenlyChat</p>
-            <p style={{ color: "#2563eb", fontSize: "0.75rem" }}>{username}</p>
+            <p style={{ color: textColor || "#2563eb", fontSize: "0.75rem" }}>{username}</p>
           </div>
         </div>
         <div style={{ display: "flex", gap: "0.25rem" }}>
@@ -57,10 +57,10 @@ export default function ChatSidebar({ users, username, avatar, onLogout, onSetti
         </p>
         <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           {users.map(u => (
-            <li key={u.username} style={{
-              display: "flex", alignItems: "center", gap: "0.5rem",
-              fontSize: "0.9rem", color: u.username === username ? "#2563eb" : "#ccc",
-            }}>
+              <li key={u.username} style={{
+                display: "flex", alignItems: "center", gap: "0.5rem",
+                fontSize: "0.9rem", color: u.textColor || (u.username === username ? "#2563eb" : "#ccc"),
+              }}>
               <div onClick={() => setPreviewUser(u)} style={{ cursor: "pointer", lineHeight: 0 }}>
                 <AvatarCircle avatar={fullUrl(u.avatar)} username={u.username} size={22} />
               </div>
