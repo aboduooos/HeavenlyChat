@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { AvatarCircle } from "@/components/settings-panel"
-import { SERVER } from "@/context/auth-context"
+import { useAuth, SERVER } from "@/context/auth-context"
 
 function fullUrl(path) {
   if (!path) return path
@@ -10,13 +10,15 @@ function fullUrl(path) {
 }
 
 export default function ChatSidebar({ users, username, avatar, textColor, onLogout, onSettings, onClose }) {
+  const { updateTextColor } = useAuth()
   const [previewUser, setPreviewUser] = useState(null)
+  const [showColors, setShowColors] = useState(false)
 
   return (
     <div style={{
       width: "220px", height: "100%", background: "#1a1a1a",
       borderRight: "1px solid #2a2a2a",
-      display: "flex", flexDirection: "column",
+      display: "flex", flexDirection: "column", position: "relative",
     }}>
       <div style={{
         padding: "1rem", borderBottom: "1px solid #2a2a2a",
@@ -26,7 +28,14 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
           <AvatarCircle avatar={fullUrl(avatar)} username={username} size={32} />
           <div>
             <p style={{ fontWeight: "bold", fontSize: "0.85rem", background: "linear-gradient(135deg, #60a5fa, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>HeavenlyChat</p>
-            <p style={{ color: textColor || "#2563eb", fontSize: "0.75rem" }}>{username}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+              <p style={{ color: textColor || "#2563eb", fontSize: "0.75rem" }}>{username}</p>
+              <div onClick={() => setShowColors(!showColors)} style={{
+                width: "10px", height: "10px", borderRadius: "50%",
+                background: textColor || "#2563eb", cursor: "pointer",
+                border: "1px solid rgba(255,255,255,0.2)", flexShrink: 0,
+              }} />
+            </div>
           </div>
         </div>
         <div style={{ display: "flex", gap: "0.25rem" }}>
@@ -50,6 +59,22 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
           )}
         </div>
       </div>
+
+      {showColors && (
+        <div style={{
+          position: "absolute", top: "4.2rem", left: "1rem", zIndex: 70,
+          background: "#1a1a1a", border: "1px solid #333", borderRadius: "8px",
+          padding: "0.6rem", display: "flex", flexWrap: "wrap", gap: "0.35rem",
+          width: "140px",
+        }}>
+          {['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c084fc','#fb7185','#fbbf24','#34d399'].map(c => (
+            <div key={c} onClick={async () => { await updateTextColor(c); setShowColors(false) }} style={{
+              width: "24px", height: "24px", borderRadius: "50%", background: c,
+              cursor: "pointer", border: textColor === c ? "2px solid #fff" : "2px solid transparent",
+            }} />
+          ))}
+        </div>
+      )}
 
       <div style={{ padding: "1rem", flex: 1, overflowY: "auto" }}>
         <p style={{ color: "#999", fontSize: "0.8rem", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
