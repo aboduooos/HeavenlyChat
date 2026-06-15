@@ -6,10 +6,21 @@ const cors = require("cors")
 const { Server } = require("socket.io")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const cloudinary = require("cloudinary").v2
 const { createUser, getUserByUsername, updateUsername, updateAvatar, saveMessage, getRecentMessages, clearMessages } = require("./db")
 
 const JWT_SECRET = process.env.JWT_SECRET || (() => { console.warn("WARNING: using default JWT_SECRET, set JWT_SECRET env var"); return "chatweb-secret-key-change-in-production" })()
 const PORT = process.env.PORT || 3000
+
+if (process.env.CLOUDINARY_URL) {
+  cloudinary.config(process.env.CLOUDINARY_URL)
+} else {
+  cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME || "dpqwn2gwk",
+    api_key: process.env.CLOUD_API_KEY || "871551859617297",
+    api_secret: process.env.CLOUD_API_SECRET || "Zd27SS6V0HNVnG8JXZxpXl-VKxc",
+  })
+}
 
 const app = express()
 const server = http.createServer(app)
@@ -56,7 +67,7 @@ app.post("/api/signup", async (req, res) => {
 
   let savedAvatar = avatar || null
   if (avatar && avatar.startsWith("data:")) {
-    savedAvatar = saveBase64File(avatar)
+    savedAvatar = await saveBase64File(avatar)
   }
 
   const hash = bcrypt.hashSync(password, 10)
@@ -125,7 +136,7 @@ app.post("/api/update-avatar", async (req, res) => {
   }
 
   if (avatar.startsWith("data:")) {
-    avatar = saveBase64File(avatar)
+    avatar = await saveBase64File(avatar)
   }
 
   await updateAvatar(decoded.username, avatar)
@@ -140,7 +151,7 @@ app.get("/api/messages", async (req, res) => {
   res.json(await getRecentMessages())
 })
 
-app.post("/api/upload", (req, res) => {
+app.post("/api/upload", async (req, res) => {
   const decoded = verifyToken(req.headers.authorization)
   if (!decoded) return res.status(401).json({ error: "Invalid token" })
 
@@ -149,7 +160,7 @@ app.post("/api/upload", (req, res) => {
     return res.status(400).json({ error: "Invalid file data" })
   }
 
-  const url = saveBase64File(data)
+  const url = await saveBase64File(data)
   res.json({ url })
 })
 
@@ -157,12 +168,16 @@ function saveBase64File(dataUrl) {
   const matches = dataUrl.match(/^data:([^;]+);base64,(.+)$/)
   if (!matches) return dataUrl
 
-  const ext = matches[1].split("/")[1] || "bin"
+  const mime = matches[1]
   const buffer = Buffer.from(matches[2], "base64")
-  const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
-  const filePath = path.join(uploadsDir, name)
-  fs.writeFileSync(filePath, buffer)
-  return `/uploads/${name}`
+  const resourceType = mime.startsWith("video/") ? "video" : "image"
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+
+  const result = cloudinary.uploader.upload(`data:${mime};base64,${matches[2]}`, {
+    resource_type: resourceType,
+    public_id: name,
+  })
+  return result.then(r => r.secure_url)
 }
 
 io.on("connection", async (socket) => {
@@ -212,7 +227,7 @@ io.on("connection", async (socket) => {
     }
 
     if (media && media.startsWith("data:")) {
-      media = saveBase64File(media)
+      media = await saveBase64File(media)
     }
 
     await saveMessage(username, content, type, media)
