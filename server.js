@@ -112,7 +112,7 @@ app.post("/api/guest", async (req, res) => {
   }
   if (!username) return res.status(500).json({ error: "Could not generate unique username" })
 
-  await createUser(username, null, null)
+  await createUser(username, "", null)
   const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "1d" })
   res.json({ token, username, avatar: null })
 })
