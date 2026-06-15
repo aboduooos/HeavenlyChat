@@ -12,6 +12,7 @@ export const metadata = {
   openGraph: {
     title: "HeavenlyChat",
     description: "No rules free for all chat",
+    siteName: "HeavenlyChat",
     images: ["/icon.png"],
   },
   twitter: {
