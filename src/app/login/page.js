@@ -9,7 +9,8 @@ export default function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const { login, token } = useAuth()
+  const [guestLoading, setGuestLoading] = useState(false)
+  const { login, guestLogin, token } = useAuth()
   const router = useRouter()
 
   if (token) {
@@ -26,6 +27,18 @@ export default function Login() {
     } catch (err) {
       setError(err.message)
     }
+  }
+
+  async function handleGuest() {
+    setError("")
+    setGuestLoading(true)
+    try {
+      await guestLogin()
+      router.push("/chat")
+    } catch (err) {
+      setError(err.message)
+    }
+    setGuestLoading(false)
   }
 
   return (
@@ -69,6 +82,21 @@ export default function Login() {
         <p style={{ color: "#666", fontSize: "0.85rem", marginTop: "1rem", textAlign: "center" }}>
           No account? <Link href="/signup" style={{ color: "#2563eb" }}>Sign up</Link>
         </p>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "1rem" }}>
+          <div style={{ flex: 1, height: "1px", background: "#333" }} />
+          <span style={{ color: "#666", fontSize: "0.8rem" }}>or</span>
+          <div style={{ flex: 1, height: "1px", background: "#333" }} />
+        </div>
+
+        <button onClick={handleGuest} disabled={guestLoading} style={{
+          width: "100%", marginTop: "1rem", padding: "0.7rem",
+          background: "transparent", color: "#93c5fd",
+          border: "1px solid #93c5fd", borderRadius: "4px",
+          fontSize: "0.95rem", cursor: "pointer", opacity: guestLoading ? 0.6 : 1,
+        }}>
+          {guestLoading ? "Joining..." : "Join as Visitor"}
+        </button>
       </form>
     </div>
   )

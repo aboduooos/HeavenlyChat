@@ -58,6 +58,16 @@ export function AuthProvider({ children }) {
     setAvatar(data.avatar || null)
   }
 
+  async function guestLogin() {
+    const res = await fetch(`${SERVER}/api/guest`, { method: "POST" })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error)
+    try { localStorage.setItem("token", data.token); localStorage.setItem("username", data.username) } catch (e) {}
+    setToken(data.token)
+    setUsername(data.username)
+    setAvatar(null)
+  }
+
   async function updateUsername(newUsername) {
     const res = await fetch(`${SERVER}/api/update-username`, {
       method: "POST",
@@ -99,7 +109,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, username, avatar, loading, signup, login, updateUsername, updateAvatar, logout }}>
+    <AuthContext.Provider value={{ token, username, avatar, loading, signup, login, guestLogin, updateUsername, updateAvatar, logout }}>
       {children}
     </AuthContext.Provider>
   )

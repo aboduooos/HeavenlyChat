@@ -97,6 +97,26 @@ app.post("/api/login", async (req, res) => {
   res.json({ token, username, avatar: user.avatar || null })
 })
 
+app.post("/api/guest", async (req, res) => {
+  function randomName() {
+    const adj = ["Cool", "Wild", "Fast", "Bold", "Shy", "Neon", "Dark", "Lucky", "Sly", "Breezy", "Frost", "Jade", "Pixel", "Storm", "Ember"]
+    const noun = ["Fox", "Wolf", "Bear", "Hawk", "Owl", "Panda", "Tiger", "Lynx", "Falcon", "Raven", "Coyote", "Viper", "Badger", "Finch", "Gecko"]
+    return `${adj[Math.floor(Math.random() * adj.length)]}_${noun[Math.floor(Math.random() * noun.length)]}${Math.floor(Math.random() * 9000 + 1000)}`
+  }
+
+  let username
+  for (let i = 0; i < 50; i++) {
+    const candidate = randomName()
+    const existing = await getUserByUsername(candidate)
+    if (!existing) { username = candidate; break }
+  }
+  if (!username) return res.status(500).json({ error: "Could not generate unique username" })
+
+  await createUser(username, null, null)
+  const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "1d" })
+  res.json({ token, username, avatar: null })
+})
+
 app.get("/api/me", async (req, res) => {
   const decoded = verifyToken(req.headers.authorization)
   if (!decoded) return res.status(401).json({ error: "Invalid token" })
