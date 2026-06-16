@@ -35,7 +35,7 @@ const GIFS = [
 ]
 
 function gifUrl(id) { return `https://media.giphy.com/media/${id}/giphy.gif` }
-function previewUrl(id) { return `https://media.giphy.com/media/${id}/giphy-downsized-small.gif` }
+function previewUrl(id) { return `https://media.giphy.com/media/${id}/giphy.gif` }
 
 export default function GifPicker({ onSelect, onClose }) {
   const [cat, setCat] = useState("All")
