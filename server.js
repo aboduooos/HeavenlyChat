@@ -12,6 +12,10 @@ const { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextC
 const JWT_SECRET = process.env.JWT_SECRET || (() => { console.warn("WARNING: using default JWT_SECRET, set JWT_SECRET env var"); return "chatweb-secret-key-change-in-production" })()
 const PORT = process.env.PORT || 3000
 
+if (!process.env.DATABASE_URL) {
+  console.warn("WARNING: DATABASE_URL not set — using SQLite (chat.db). Data will be lost on server restart!")
+}
+
 if (process.env.CLOUDINARY_URL) {
   cloudinary.config(process.env.CLOUDINARY_URL)
 } else {
@@ -37,6 +41,10 @@ if (!fs.existsSync(uploadsDir)) {
 app.use("/uploads", express.static(uploadsDir, { maxAge: "7d" }))
 
 const onlineUsers = {}
+
+setInterval(() => {
+  io.to("general").emit("users", Object.values(onlineUsers))
+}, 30000)
 
 function verifyToken(authHeader) {
   if (!authHeader) return null
@@ -255,6 +263,8 @@ io.on("connection", async (socket) => {
   onlineUsers[username] = { username, avatar, textColor }
   socket.join("general")
 
+  console.log(`[connect] ${username} connected (${Object.keys(onlineUsers).length} online)`)
+
   socket.emit("messages", await getRecentMessages())
 
   const userList = Object.values(onlineUsers)
@@ -294,10 +304,11 @@ io.on("connection", async (socket) => {
     io.to("general").emit("new_message", msg)
   })
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", (reason) => {
     delete onlineUsers[username]
     const userList = Object.values(onlineUsers)
     io.to("general").emit("users", userList)
+    console.log(`[disconnect] ${username} disconnected (${reason}) — ${Object.keys(onlineUsers).length} online`)
   })
 })
 
