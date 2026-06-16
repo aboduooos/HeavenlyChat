@@ -232,24 +232,24 @@ const GIPHY_API_KEY = process.env.GIPHY_API_KEY
 
 app.get("/api/gifs/trending", async (req, res) => {
   if (!verifyToken(req.headers.authorization)) return res.status(401).json({ error: "Invalid token" })
-  if (!GIPHY_API_KEY) return res.json([])
+  if (!GIPHY_API_KEY) return res.json({ error: "missing_key" })
   try {
     const r = await fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=g`)
     const data = await r.json()
-    res.json((data.data || []).map(g => ({ id: g.id, url: g.images.fixed_height.url, preview: g.images.fixed_height_small.url, title: g.title })))
-  } catch { res.json([]) }
+    res.json({ gifs: (data.data || []).map(g => ({ id: g.id, url: g.images.fixed_height.url, preview: g.images.fixed_height_small.url, title: g.title })) })
+  } catch { res.json({ gifs: [] }) }
 })
 
 app.get("/api/gifs/search", async (req, res) => {
   if (!verifyToken(req.headers.authorization)) return res.status(401).json({ error: "Invalid token" })
-  if (!GIPHY_API_KEY) return res.json([])
+  if (!GIPHY_API_KEY) return res.json({ error: "missing_key" })
   const q = req.query.q
-  if (!q) return res.json([])
+  if (!q) return res.json({ gifs: [] })
   try {
     const r = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(q)}&limit=24&rating=g`)
     const data = await r.json()
-    res.json((data.data || []).map(g => ({ id: g.id, url: g.images.fixed_height.url, preview: g.images.fixed_height_small.url, title: g.title })))
-  } catch { res.json([]) }
+    res.json({ gifs: (data.data || []).map(g => ({ id: g.id, url: g.images.fixed_height.url, preview: g.images.fixed_height_small.url, title: g.title })) })
+  } catch { res.json({ gifs: [] }) }
 })
 
 function saveBase64File(dataUrl) {

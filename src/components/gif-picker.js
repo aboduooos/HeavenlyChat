@@ -6,6 +6,7 @@ export default function GifPicker({ onSelect, onClose }) {
   const [gifs, setGifs] = useState([])
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const { token } = useAuth()
   const inputRef = useRef(null)
 
@@ -13,7 +14,13 @@ export default function GifPicker({ onSelect, onClose }) {
     inputRef.current?.focus()
     fetch(`${SERVER}/api/gifs/trending`, {
       headers: { Authorization: `Bearer ${token}` },
-    }).then(r => r.json()).then(setGifs).catch(() => {}).finally(() => setLoading(false))
+    }).then(r => r.json()).then(data => {
+      if (data.error === "missing_key") {
+        setError("missing_key")
+      } else {
+        setGifs(data.gifs || [])
+      }
+    }).catch(() => {}).finally(() => setLoading(false))
   }, [token])
 
   async function handleSearch(e) {
@@ -25,7 +32,12 @@ export default function GifPicker({ onSelect, onClose }) {
       const r = await fetch(`${SERVER}/api/gifs/search?q=${encodeURIComponent(q)}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      setGifs(await r.json())
+      const data = await r.json()
+      if (data.error === "missing_key") {
+        setError("missing_key")
+      } else {
+        setGifs(data.gifs || [])
+      }
     } catch {}
     setLoading(false)
   }
@@ -62,6 +74,14 @@ export default function GifPicker({ onSelect, onClose }) {
       }}>
         {loading ? (
           <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#666", padding: "2rem" }}>Loading...</div>
+        ) : error === "missing_key" ? (
+          <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#f87171", padding: "1rem", fontSize: "0.85rem", lineHeight: 1.5 }}>
+            GIPHY API key not set.<br />
+            Add <b>GIPHY_API_KEY</b> in Render env vars.<br /><br />
+            Get a free key at<br />
+            <span style={{ color: "#93c5fd" }}>developers.giphy.com</span><br />
+            (takes 2 min, free tier)
+          </div>
         ) : gifs.length === 0 ? (
           <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#666", padding: "2rem" }}>No GIFs found</div>
         ) : gifs.map(g => (
