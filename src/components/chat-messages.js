@@ -72,6 +72,7 @@ export default function ChatMessages({ messages, username }) {
     }
     const urlRegex = /(https?:\/\/[^\s<]+)/g
     const parts = m.content.split(urlRegex)
+    const imgExt = /\.(gif|png|jpe?g|webp|bmp)(\?.*)?$/i
     return <div style={{
       background: m.username === username ? "#2563eb" : "#2a2a2a",
       color: m.username === username ? "#fff" : "#e5e5e5",
@@ -83,9 +84,18 @@ export default function ChatMessages({ messages, username }) {
       lineHeight: 1.4,
       wordBreak: "break-word",
     }}>
-      {parts.map((part, i) => part.startsWith("http")
-        ? <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#93c5fd", textDecoration: "underline" }}>{part}</a>
-        : part)}
+      {parts.map((part, i) => {
+        if (part.startsWith("http") && imgExt.test(part)) {
+          return <img key={i} src={part} alt="" loading="lazy" style={{
+            maxWidth: "260px", maxHeight: "260px", borderRadius: "8px",
+            display: "block", marginTop: "0.25rem", cursor: "pointer",
+          }} onClick={(e) => { e.stopPropagation(); setPreview({ type: "image", media: part }) }} />
+        }
+        if (part.startsWith("http")) {
+          return <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#93c5fd", textDecoration: "underline" }}>{part}</a>
+        }
+        return part
+      })}
     </div>
   }
 
