@@ -144,7 +144,7 @@ app.post("/api/guest", async (req, res) => {
     res.json({ token, username, avatar: null, textColor })
   } catch (err) {
     console.error("[api/guest] error:", err)
-    res.status(500).json({ error: "Server error" })
+    res.status(500).json({ error: "Server error", detail: err.message })
   }
 })
 
