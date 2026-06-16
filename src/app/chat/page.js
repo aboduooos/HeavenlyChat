@@ -22,6 +22,7 @@ export default function Chat() {
 
   const [unread, setUnread] = useState(0)
   const unreadRef = useRef(0)
+  const [showReconnect, setShowReconnect] = useState(false)
 
   useEffect(() => {
     function check() {
@@ -81,7 +82,6 @@ export default function Chat() {
 
     const s = connectSocket(token)
     setSocket(s)
-    setConnected(s.connected)
 
     function onConnect() {
       setConnected(true)
@@ -91,9 +91,14 @@ export default function Chat() {
       setConnected(false)
     }
 
+    function onConnectError(err) {
+      console.warn("[socket] connect_error:", err.message)
+    }
+
     s.on("connect", onConnect)
     s.on("disconnect", onDisconnect)
-    if (s.connected) setConnected(true)
+    s.on("connect_error", onConnectError)
+    setConnected(s.connected)
 
     s.on("messages", (msgs) => {
       setMessages(msgs)
@@ -132,9 +137,18 @@ export default function Chat() {
     return () => {
       s.off("connect", onConnect)
       s.off("disconnect", onDisconnect)
+      s.off("connect_error", onConnectError)
       disconnectSocket()
     }
   }, [token, loading, router])
+
+  useEffect(() => {
+    if (!connected) {
+      const t = setTimeout(() => setShowReconnect(true), 5000)
+      return () => clearTimeout(t)
+    }
+    setShowReconnect(false)
+  }, [connected])
 
   const handleSend = useCallback((content) => {
     if (socket?.connected) {
@@ -206,12 +220,12 @@ export default function Chat() {
           </div>
         )}
 
-        {!connected && (
+        {showReconnect && (
           <div style={{
             textAlign: "center", padding: "0.5rem", fontSize: "0.85rem",
             background: "#1e1a1a", color: "#f87171", borderBottom: "1px solid #3a2a2a",
           }}>
-            Reconnecting to server...
+            Connection lost — retrying...
           </div>
         )}
         <ChatMessages messages={messages} username={username} />
