@@ -60,8 +60,8 @@ function verifyToken(authHeader) {
 
 function randomTextColor() {
   const h = Math.floor(Math.random() * 360)
-  const s = 55 + Math.floor(Math.random() * 25)
-  const l = 55 + Math.floor(Math.random() * 20)
+  let s = 55 + Math.floor(Math.random() * 25)
+  let l = 55 + Math.floor(Math.random() * 20)
   s /= 100; l /= 100
   const a = s * Math.min(l, 1 - l)
   const f = (n) => {
