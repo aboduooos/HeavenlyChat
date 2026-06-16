@@ -1,38 +1,32 @@
 "use client"
-import { useState, useRef } from "react"
+import { useState, useRef, useCallback } from "react"
 import { useAuth, SERVER } from "@/context/auth-context"
 
 export default function MessageInput({ onSend }) {
-  const [text, setText] = useState("")
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef(null)
+  const inputRef = useRef(null)
   const { token } = useAuth()
 
-  function handleSubmit(e) {
-    e.preventDefault()
-    if (text.trim() === "") return
-    onSend({ type: "text", content: text.trim() })
-    setText("")
-  }
+  const sendText = useCallback(() => {
+    const text = (inputRef.current?.textContent || "").trim()
+    if (!text) return
+    onSend({ type: "text", content: text })
+    if (inputRef.current) inputRef.current.textContent = ""
+  }, [onSend])
 
-  async function handleFile(e) {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const uploadFile = useCallback(async (file) => {
     if (file.size > 10 * 1024 * 1024) {
       alert("File too large (max 10MB)")
       return
     }
-
     setUploading(true)
     const reader = new FileReader()
     reader.onload = async (ev) => {
       try {
         const res = await fetch(`${SERVER}/api/upload`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ data: ev.target.result }),
         })
         const data = await res.json()
@@ -45,11 +39,36 @@ export default function MessageInput({ onSend }) {
       setUploading(false)
     }
     reader.readAsDataURL(file)
+  }, [token, onSend])
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      sendText()
+    }
+  }
+
+  function handlePaste(e) {
+    const items = e.clipboardData?.items
+    if (!items) return
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        e.preventDefault()
+        const file = item.getAsFile()
+        if (file) { uploadFile(file); return }
+      }
+    }
+  }
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    uploadFile(file)
     e.target.value = ""
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{
+    <div style={{
       display: "flex", gap: "0.5rem", padding: "0.75rem",
       borderTop: "1px solid #2a2a2a", boxSizing: "border-box",
     }}>
@@ -72,16 +91,34 @@ export default function MessageInput({ onSend }) {
       </button>
       <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleFile}
         style={{ display: "none" }} />
-      <input
-        type="text" placeholder="Type a message..." value={text}
-        onChange={e => setText(e.target.value)}
+      <div ref={inputRef} contentEditable
+        onKeyDown={handleKeyDown} onPaste={handlePaste}
+        onInput={() => {
+          const el = inputRef.current
+          if (!el) return
+          if (el.textContent || el.children.length > 0) {
+            el.dataset.active = "true"
+          } else {
+            delete el.dataset.active
+          }
+        }}
+        data-placeholder="Type a message..."
         style={{
           flex: 1, padding: "0.6rem 0.8rem", borderRadius: "6px",
           background: "#0f0f0f", border: "1px solid #333", color: "#e5e5e5",
           fontSize: "0.95rem", outline: "none", boxSizing: "border-box",
+          cursor: "text", whiteSpace: "pre-wrap", wordBreak: "break-word",
+          minHeight: "36px", maxHeight: "120px", overflowY: "auto",
         }}
       />
-      <button type="submit" style={{
+      <style>{`
+        div[contenteditable]:not([data-active]):before {
+          content: attr(data-placeholder);
+          color: #666;
+          pointer-events: none;
+        }
+      `}</style>
+      <button type="button" onClick={sendText} style={{
         background: "#93c5fd", border: "none", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: "0", flexShrink: 0, width: "36px", height: "36px",
@@ -91,6 +128,6 @@ export default function MessageInput({ onSend }) {
           <polygon points="5,3 19,12 5,21" fill="#fff" />
         </svg>
       </button>
-    </form>
+    </div>
   )
 }
