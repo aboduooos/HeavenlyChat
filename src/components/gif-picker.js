@@ -74,7 +74,8 @@ export default function GifPicker({ onSelect, onClose, simple }) {
       </div>
       <div style={{
         display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: "3px",
-        padding: "4px", overflowY: "auto", flex: 1,
+        padding: "4px", overflowY: "auto",
+        ...(simple ? { flex: 1 } : { maxHeight: "300px" }),
       }}>
         {filtered.filter(g => g.visible !== false).map(g => (
           <img key={g.id} src={previewUrl(g.id)} alt={g.title}
