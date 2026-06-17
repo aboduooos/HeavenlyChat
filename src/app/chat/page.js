@@ -7,6 +7,7 @@ import { connectSocket, disconnectSocket } from "@/lib/socket"
 import ChatSidebar from "@/components/chat-sidebar"
 import ChatMessages from "@/components/chat-messages"
 import MessageInput from "@/components/message-input"
+import GifPicker from "@/components/gif-picker"
 import SettingsPanel from "@/components/settings-panel"
 
 export default function Chat() {
@@ -23,6 +24,7 @@ export default function Chat() {
   const [unread, setUnread] = useState(0)
   const unreadRef = useRef(0)
   const [showReconnect, setShowReconnect] = useState(false)
+  const [showGifs, setShowGifs] = useState(false)
 
   useEffect(() => {
     function check() {
@@ -229,8 +231,30 @@ export default function Chat() {
           </div>
         )}
         <ChatMessages messages={messages} username={username} />
-        <MessageInput onSend={handleSend} />
+        <MessageInput onSend={handleSend} onGifOpen={mobile ? undefined : () => setShowGifs(v => !v)} />
       </div>
+
+      {!mobile && (
+        <div style={{
+          width: showGifs ? "340px" : "0px",
+          overflow: "hidden", transition: "width 0.2s ease",
+          borderLeft: showGifs ? "1px solid #2a2a2a" : "none",
+          display: "flex", flexDirection: "column",
+        }}>
+          <div style={{ width: "340px", display: "flex", flexDirection: "column", height: "100%", background: "#1a1a1a" }}>
+            <div style={{ display: "flex", alignItems: "center", padding: "0.75rem 1rem", borderBottom: "1px solid #2a2a2a", flexShrink: 0 }}>
+              <span style={{ fontWeight: "bold", fontSize: "0.9rem", color: "#e5e5e5" }}>GIFs</span>
+              <button onClick={() => setShowGifs(false)} style={{
+                marginLeft: "auto", background: "none", border: "none",
+                color: "#999", cursor: "pointer", fontSize: "1.1rem", padding: "0.2rem",
+              }}>✕</button>
+            </div>
+            <div style={{ flex: 1, overflow: "hidden" }}>
+              {showGifs && <GifPicker simple onSelect={(url) => { setShowGifs(false); handleSend({ type: "image", content: "", media: url }) }} onClose={() => setShowGifs(false)} />}
+            </div>
+          </div>
+        </div>
+      )}
 
       {settingsOpen && (
         <div style={{

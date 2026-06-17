@@ -37,7 +37,7 @@ const GIFS = [
 function gifUrl(id) { return `https://media.giphy.com/media/${id}/giphy.gif` }
 function previewUrl(id) { return `https://media.giphy.com/media/${id}/giphy.gif` }
 
-export default function GifPicker({ onSelect, onClose }) {
+export default function GifPicker({ onSelect, onClose, simple }) {
   const [cat, setCat] = useState("All")
 
   const cats = [
@@ -50,13 +50,8 @@ export default function GifPicker({ onSelect, onClose }) {
 
   const filtered = cat === "All" ? GIFS : GIFS.filter(cats.find(c => c.name === cat).fn)
 
-  return (
-    <div style={{
-      position: "absolute", bottom: "100%", left: 0, right: 0,
-      width: "100%", maxWidth: "400px", margin: "0 auto",
-      background: "#1a1a1a", border: "1px solid #333", borderRadius: "10px 10px 0 0",
-      overflow: "hidden", zIndex: 200, display: "flex", flexDirection: "column",
-    }}>
+  const content = (
+    <>
       <div style={{
         display: "flex", gap: "0.25rem", padding: "0.4rem 0.5rem",
         borderBottom: "1px solid #333", overflowX: "auto", flexShrink: 0,
@@ -70,14 +65,16 @@ export default function GifPicker({ onSelect, onClose }) {
             flexShrink: 0,
           }}>{c.name}</button>
         ))}
-        <button onClick={onClose} style={{
-          marginLeft: "auto", background: "none", border: "none",
-          color: "#999", cursor: "pointer", fontSize: "1rem", padding: "0 0.2rem",
-        }}>✕</button>
+        {!simple && (
+          <button onClick={onClose} style={{
+            marginLeft: "auto", background: "none", border: "none",
+            color: "#999", cursor: "pointer", fontSize: "1rem", padding: "0 0.2rem",
+          }}>✕</button>
+        )}
       </div>
       <div style={{
         display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: "3px",
-        padding: "4px", maxHeight: "300px", overflowY: "auto",
+        padding: "4px", overflowY: "auto", flex: 1,
       }}>
         {filtered.filter(g => g.visible !== false).map(g => (
           <img key={g.id} src={previewUrl(g.id)} alt={g.title}
@@ -92,6 +89,21 @@ export default function GifPicker({ onSelect, onClose }) {
           />
         ))}
       </div>
+    </>
+  )
+
+  if (simple) {
+    return content
+  }
+
+  return (
+    <div style={{
+      position: "absolute", bottom: "100%", left: 0, right: 0,
+      width: "100%", maxWidth: "400px", margin: "0 auto",
+      background: "#1a1a1a", border: "1px solid #333", borderRadius: "10px 10px 0 0",
+      overflow: "hidden", zIndex: 200, display: "flex", flexDirection: "column",
+    }}>
+      {content}
     </div>
   )
 }

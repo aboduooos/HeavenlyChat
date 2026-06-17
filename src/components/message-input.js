@@ -3,7 +3,7 @@ import { useState, useRef, useCallback } from "react"
 import { useAuth, SERVER } from "@/context/auth-context"
 import GifPicker from "./gif-picker"
 
-export default function MessageInput({ onSend }) {
+export default function MessageInput({ onSend, onGifOpen }) {
   const [uploading, setUploading] = useState(false)
   const [showGifs, setShowGifs] = useState(false)
   const fileRef = useRef(null)
@@ -97,16 +97,16 @@ export default function MessageInput({ onSend }) {
           </svg>
         )}
       </button>
-      <button type="button" onClick={() => setShowGifs(v => !v)} style={{
+      <button type="button" onClick={() => onGifOpen ? onGifOpen() : setShowGifs(v => !v)} style={{
         padding: "0.6rem 0.7rem", borderRadius: "6px",
-        background: showGifs ? "#2563eb" : "#2a2a2a", color: "#ccc", border: "none",
+        background: "#2a2a2a", color: "#ccc", border: "none",
         cursor: "pointer", fontSize: "1rem",
         display: "flex", alignItems: "center", justifyContent: "center",
         flexShrink: 0,
       }}>
         <span style={{ fontWeight: "bold", fontSize: "0.9rem" }}>GIF</span>
       </button>
-      {showGifs && <GifPicker onSelect={handleGifSelect} onClose={() => setShowGifs(false)} />}
+      {!onGifOpen && showGifs && <GifPicker onSelect={handleGifSelect} onClose={() => setShowGifs(false)} />}
       <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleFile}
         style={{ display: "none" }} />
       <div ref={inputRef} contentEditable
