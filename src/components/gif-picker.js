@@ -326,7 +326,7 @@ const GIFS = [
 ]
 
 function gifUrl(id) { return `https://media.giphy.com/media/${id}/giphy.gif` }
-function previewUrl(id) { return `https://media.giphy.com/media/${id}/giphy.gif` }
+function previewUrl(id) { return `https://media.giphy.com/media/${id}/100w.gif` }
 
 export default function GifPicker({ onSelect, onClose, simple }) {
   const [cat, setCat] = useState("All")
@@ -369,21 +369,23 @@ export default function GifPicker({ onSelect, onClose, simple }) {
       </div>
       <div style={{
         display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: "3px",
-        padding: "4px", overflowY: "auto",
+        padding: "4px", overflowY: "auto", contentVisibility: "auto",
         ...(simple ? { flex: 1 } : { maxHeight: "300px" }),
       }}>
         {filtered.map(g => (
-          <img key={g.id} src={previewUrl(g.id)} alt={g.title}
-            onClick={() => onSelect(gifUrl(g.id))}
-            title={g.title}
-            referrerPolicy="no-referrer"
-            onError={(e) => { e.target.remove() }}
-            style={{
-              width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: "4px",
-              cursor: "pointer", background: "#0f0f0f",
-            }}
-            loading="lazy"
-          />
+          <div key={g.id} style={{ width: "100%", aspectRatio: "1", borderRadius: "4px", background: "#0f0f0f" }}>
+            <img src={previewUrl(g.id)} alt=""
+              onClick={() => onSelect(gifUrl(g.id))}
+              title={g.title}
+              referrerPolicy="no-referrer"
+              onError={(e) => { e.target.style.opacity = "0" }}
+              style={{
+                width: "100%", height: "100%", objectFit: "cover", borderRadius: "4px",
+                cursor: "pointer", display: "block",
+              }}
+              loading="lazy"
+            />
+          </div>
         ))}
       </div>
     </>
