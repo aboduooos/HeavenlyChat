@@ -293,6 +293,34 @@ const GIFS = [
   { id: "l0HlPtbGpcnqa0fja", title: "Happy 42", cat: "happy" },
   { id: "9cpDS5h2E7p9f98pLd", title: "Wow 46", cat: "wow" },
   { id: "tqiYB9X6goN68", title: "Lol 40", cat: "lol" },
+  { id: "o5ht0KxTJDAS90MNWI", title: "Amabatu 1", cat: "amabatu" },
+  { id: "AmRBGkss5kBCcney1T", title: "Amabatu 2", cat: "amabatu" },
+  { id: "toXKzaJP3WIgM", title: "Amabatu 3", cat: "amabatu" },
+  { id: "QZQCo1MgjmnJ1oOeip", title: "Amabatu 4", cat: "amabatu" },
+  { id: "WrBSHRLE9gEgM", title: "Amabatu 5", cat: "amabatu" },
+  { id: "3o84sq21TxDH6PyYms", title: "Amabatu 6", cat: "amabatu" },
+  { id: "tUf5b4oRrgRjdWZHNM", title: "Amabatu 7", cat: "amabatu" },
+  { id: "MtqQSt7MKUV7W4TdDh", title: "Amabatu 8", cat: "amabatu" },
+  { id: "AS1gcB11vrXJKp5P8T", title: "Amabatu 9", cat: "amabatu" },
+  { id: "4GeMCqbCZdZiTKDPVv", title: "Amabatu 10", cat: "amabatu" },
+  { id: "47ZZsFzMuJuiJmg1cZ", title: "Amabatu 11", cat: "amabatu" },
+  { id: "JQY7XbHk1hlmqpKsz2", title: "Amabatu 12", cat: "amabatu" },
+  { id: "KCTEKKeHGQazrvGK6f", title: "Amabatu 13", cat: "amabatu" },
+  { id: "qBvYajNaVszYtaEUQ6", title: "Amabatu 14", cat: "amabatu" },
+  { id: "BpAoGAZ2qoIOM2guhx", title: "Amabatu 15", cat: "amabatu" },
+  { id: "TJeNvXKIQUEEqp8lVR", title: "Amabatu 16", cat: "amabatu" },
+  { id: "13HBDT4QSTpveU", title: "Amabatu 17", cat: "amabatu" },
+  { id: "AZQGMIiEK8yDfGEn55", title: "Amabatu 18", cat: "amabatu" },
+  { id: "3owzW9t7Fgt7JiFHfW", title: "Amabatu 19", cat: "amabatu" },
+  { id: "URfX6wPJi6jWxAHryn", title: "Amabatu 20", cat: "amabatu" },
+  { id: "wQVKawelOaU52JGwjO", title: "Amabatu 21", cat: "amabatu" },
+  { id: "I56vaarjCSIP37Zu26", title: "Amabatu 22", cat: "amabatu" },
+  { id: "RLsiL96s4qwOWw41CJ", title: "Amabatu 23", cat: "amabatu" },
+  { id: "5Az0uB1iLeuvgcOoFK", title: "Amabatu 24", cat: "amabatu" },
+  { id: "rk6lz0dqw8vktVgGtM", title: "Amabatu 25", cat: "amabatu" },
+  { id: "cP5BrNnl75Noz4F4uF", title: "Amabatu 26", cat: "amabatu" },
+  { id: "1fMjj5j2Z7chq", title: "Amabatu 27", cat: "amabatu" },
+  { id: "lsJCkIKV6AT28", title: "Amabatu 28", cat: "amabatu" },
 ]
 
 function gifUrl(id) { return `https://media.giphy.com/media/${id}/giphy.gif` }
@@ -310,6 +338,7 @@ export default function GifPicker({ onSelect, onClose, simple }) {
     { name: "Cute", fn: g => g.cat === "cute" },
     { name: "Angry", fn: g => g.cat === "angry" },
     { name: "Love", fn: g => g.cat === "love" },
+    { name: "Amabatu", fn: g => g.cat === "amabatu" },
   ]
 
   const filtered = cat === "All" ? GIFS : GIFS.filter(cats.find(c => c.name === cat).fn)
