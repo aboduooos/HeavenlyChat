@@ -53,6 +53,7 @@ export default function GifPicker({ onSelect, onClose }) {
   return (
     <div style={{
       position: "absolute", bottom: "100%", left: 0, right: 0,
+      width: "100%", maxWidth: "400px", margin: "0 auto",
       background: "#1a1a1a", border: "1px solid #333", borderRadius: "10px 10px 0 0",
       overflow: "hidden", zIndex: 200, display: "flex", flexDirection: "column",
     }}>
@@ -75,8 +76,8 @@ export default function GifPicker({ onSelect, onClose }) {
         }}>✕</button>
       </div>
       <div style={{
-        display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "4px",
-        padding: "4px", maxHeight: "280px", overflowY: "auto",
+        display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: "3px",
+        padding: "4px", maxHeight: "300px", overflowY: "auto",
       }}>
         {filtered.filter(g => g.visible !== false).map(g => (
           <img key={g.id} src={previewUrl(g.id)} alt={g.title}
