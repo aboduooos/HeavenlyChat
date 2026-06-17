@@ -249,7 +249,7 @@ export default function Chat() {
                 color: "#999", cursor: "pointer", fontSize: "1.1rem", padding: "0.2rem",
               }}>✕</button>
             </div>
-            <div style={{ flex: 1, overflow: "hidden" }}>
+            <div style={{ flex: 1, overflow: "auto" }}>
               {showGifs && <GifPicker simple onSelect={(url) => { setShowGifs(false); handleSend({ type: "image", content: "", media: url }) }} onClose={() => setShowGifs(false)} />}
             </div>
           </div>
