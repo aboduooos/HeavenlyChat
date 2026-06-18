@@ -252,6 +252,27 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, time: Date.now() })
 })
 
+function getGeoLocation(ip) {
+  return new Promise((resolve) => {
+    if (!ip || ip === "::1" || ip.startsWith("127.") || ip.startsWith("10.") || ip.startsWith("192.168.") || ip.startsWith("172.16.")) {
+      resolve({ country: null, city: null })
+      return
+    }
+    const req = http.get(`http://ip-api.com/json/${ip}?fields=country,city`, (res) => {
+      let data = ""
+      res.on("data", (chunk) => data += chunk)
+      res.on("end", () => {
+        try {
+          const j = JSON.parse(data)
+          resolve({ country: j.country || null, city: j.city || null })
+        } catch { resolve({ country: null, city: null }) }
+      })
+    })
+    req.on("error", () => resolve({ country: null, city: null }))
+    req.setTimeout(3000, () => { req.destroy(); resolve({ country: null, city: null }) })
+  })
+}
+
 app.use("/api/track", express.text({ type: "*/*" }))
 app.post("/api/track", async (req, res) => {
   try {
@@ -265,7 +286,8 @@ app.post("/api/track", async (req, res) => {
     if (!site || !event_type) return res.status(400).json({ error: "Missing site or event_type" })
     const ip = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket.remoteAddress
     const ua = req.headers["user-agent"]
-    await logEvent(site, event_type, { path: body.path, referrer: body.referrer, ip, userAgent: ua, extra: body.extra })
+    const geo = await getGeoLocation(ip)
+    await logEvent(site, event_type, { path: body.path, referrer: body.referrer, ip, country: geo.country, city: geo.city, userAgent: ua, extra: body.extra })
     res.json({ ok: true })
   } catch (err) {
     console.error("[track] error:", err?.message || err)
