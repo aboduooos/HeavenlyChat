@@ -270,7 +270,14 @@ io.on("connection", async (socket) => {
     const token = socket.handshake.auth.token
     if (!token) { socket.disconnect(); return }
 
-    const decoded = jwt.verify(token, JWT_SECRET)
+    let decoded
+    try {
+      decoded = jwt.verify(token, JWT_SECRET)
+    } catch (e) {
+      socket.emit("error_message", "token_" + (e.message.includes("expired") ? "expired" : "invalid"))
+      socket.disconnect()
+      return
+    }
     username = decoded.username
 
     const user = await getUserByUsername(username)

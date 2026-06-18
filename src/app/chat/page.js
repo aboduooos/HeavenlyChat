@@ -104,6 +104,10 @@ export default function Chat() {
     function onServerError(msg) {
       console.warn("[socket] server error:", msg)
       setReconnectMsg("Server: " + msg)
+      if (msg === "token_expired" || msg === "token_invalid") {
+        logout()
+        router.replace("/login")
+      }
     }
 
     s.on("connect", onConnect)
