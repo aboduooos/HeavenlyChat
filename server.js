@@ -9,6 +9,13 @@ const jwt = require("jsonwebtoken")
 const cloudinary = require("cloudinary").v2
 const { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages } = require("./db")
 
+process.on("unhandledRejection", (reason) => {
+  console.error("[unhandledRejection]", reason)
+})
+process.on("uncaughtException", (err) => {
+  console.error("[uncaughtException]", err)
+})
+
 const JWT_SECRET = process.env.JWT_SECRET || (() => { console.warn("WARNING: using default JWT_SECRET, set JWT_SECRET env var"); return "chatweb-secret-key-change-in-production" })()
 const PORT = process.env.PORT || 3000
 
@@ -31,7 +38,12 @@ const server = http.createServer(app)
 
 app.set("env", "production")
 
-const io = new Server(server, { cors: { origin: true, methods: ["GET", "POST"] } })
+const io = new Server(server, {
+  cors: { origin: true, methods: ["GET", "POST"], credentials: true },
+  pingInterval: 120000,
+  pingTimeout: 60000,
+  transports: ["websocket", "polling"],
+})
 
 app.use(cors())
 app.use(express.json({ limit: "10mb" }))
@@ -245,73 +257,79 @@ function saveBase64File(dataUrl) {
 }
 
 io.on("connection", async (socket) => {
-  const token = socket.handshake.auth.token
-  if (!token) {
-    socket.disconnect()
-    return
-  }
-
   let username
   try {
+    const token = socket.handshake.auth.token
+    if (!token) { socket.disconnect(); return }
+
     const decoded = jwt.verify(token, JWT_SECRET)
     username = decoded.username
-  } catch {
+
+    const user = await getUserByUsername(username)
+    const avatar = user?.avatar || null
+    const textColor = user?.text_color || '#e5e5e5'
+
+    socket.data.username = username
+    socket.data.avatar = avatar
+    socket.data.textColor = textColor
+    onlineUsers[username] = { username, avatar, textColor }
+    socket.join("general")
+
+    console.log(`[connect] ${username} connected (${Object.keys(onlineUsers).length} online)`)
+
+    const msgs = await getRecentMessages()
+    socket.emit("messages", msgs)
+
+    const userList = Object.values(onlineUsers)
+    io.to("general").emit("users", userList)
+  } catch (err) {
+    console.error("[connection] error:", err?.message || err)
+    socket.emit("error_message", "Server error, please refresh")
     socket.disconnect()
     return
   }
 
-  const user = await getUserByUsername(username)
-  const avatar = user?.avatar || null
-  const textColor = user?.text_color || '#e5e5e5'
-
-  socket.data.username = username
-  socket.data.avatar = avatar
-  socket.data.textColor = textColor
-  onlineUsers[username] = { username, avatar, textColor }
-  socket.join("general")
-
-  console.log(`[connect] ${username} connected (${Object.keys(onlineUsers).length} online)`)
-
-  socket.emit("messages", await getRecentMessages())
-
-  const userList = Object.values(onlineUsers)
-  io.to("general").emit("users", userList)
-
   socket.on("send_message", async (data) => {
-    const type = data?.type || "text"
-    const content = data?.content?.trim() || ""
-    let media = data?.media || null
-    if (type === "text" && !content) return
-    if (type !== "text" && !media) return
+    try {
+      const type = data?.type || "text"
+      const content = data?.content?.trim() || ""
+      let media = data?.media || null
+      if (type === "text" && !content) return
+      if (type !== "text" && !media) return
 
-    if (type === "text" && content === "/clear") {
-      if (username !== "mighty_seller") {
-        socket.emit("error_message", "Only mighty_seller can clear the chat")
+      if (type === "text" && content === "/clear") {
+        if (username !== "mighty_seller") {
+          socket.emit("error_message", "Only mighty_seller can clear the chat")
+          return
+        }
+        await clearMessages()
+        io.to("general").emit("messages_cleared")
         return
       }
-      await clearMessages()
-      io.to("general").emit("messages_cleared")
-      return
-    }
 
-    if (media && media.startsWith("data:")) {
-      media = await saveBase64File(media)
-    }
+      if (media && media.startsWith("data:")) {
+        media = await saveBase64File(media)
+      }
 
-    await saveMessage(username, content, type, media)
-    const msg = {
-      username,
-      content,
-      type,
-      media,
-      avatar,
-      textColor,
-      created_at: new Date().toISOString(),
+      await saveMessage(username, content, type, media)
+      const msg = {
+        username,
+        content,
+        type,
+        media,
+        avatar: socket.data.avatar,
+        textColor: socket.data.textColor,
+        created_at: new Date().toISOString(),
+      }
+      io.to("general").emit("new_message", msg)
+    } catch (err) {
+      console.error("[send_message] error:", err?.message || err)
+      socket.emit("error_message", "Failed to send message")
     }
-    io.to("general").emit("new_message", msg)
   })
 
   socket.on("disconnect", (reason) => {
+    if (!username) return
     delete onlineUsers[username]
     const userList = Object.values(onlineUsers)
     io.to("general").emit("users", userList)
@@ -323,7 +341,7 @@ const outDir = path.join(__dirname, "out")
 if (fs.existsSync(outDir)) {
   app.use("/_next", express.static(path.join(outDir, "_next"), { maxAge: "1y" }))
   app.use(express.static(outDir, { maxAge: 0 }))
-  app.get("/{*path}", (req, res) => {
+  app.get("*", (req, res) => {
     if (req.path.startsWith("/api/") || req.path.startsWith("/uploads/") || req.path.startsWith("/socket.io/")) return
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
     const p = req.path === "/" ? "index.html" : `${req.path}.html`

@@ -136,6 +136,10 @@ export default function Chat() {
       setUsers(userList)
     })
 
+    s.on("error_message", (msg) => {
+      console.warn("[socket] server error:", msg)
+    })
+
     return () => {
       s.off("connect", onConnect)
       s.off("disconnect", onDisconnect)
