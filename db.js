@@ -66,6 +66,8 @@ if (process.env.DATABASE_URL) {
     );
   `)
   try { db.exec(`ALTER TABLE users ADD COLUMN IF NOT EXISTS text_color VARCHAR(7) DEFAULT '#e5e5e5'`) } catch (e) {}
+  try { db.exec(`ALTER TABLE analytics ADD COLUMN IF NOT EXISTS country TEXT`) } catch (e) {}
+  try { db.exec(`ALTER TABLE analytics ADD COLUMN IF NOT EXISTS city TEXT`) } catch (e) {}
 } else {
   const Database = require("better-sqlite3")
   db = new Database(path.join(__dirname, "chat.db"))
