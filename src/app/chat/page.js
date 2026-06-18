@@ -143,6 +143,7 @@ export default function Chat() {
 
     s.on("error_message", (msg) => {
       console.warn("[socket] server error:", msg)
+      setReconnectMsg("Server: " + msg)
     })
 
     return () => {

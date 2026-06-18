@@ -291,8 +291,9 @@ io.on("connection", async (socket) => {
     const userList = Object.values(onlineUsers)
     io.to("general").emit("users", userList)
   } catch (err) {
-    console.error("[connection] error:", err?.message || err)
-    socket.emit("error_message", "Server error, please refresh")
+    const msg = err?.message || String(err)
+    console.error("[connection] error:", msg)
+    socket.emit("error_message", msg)
     socket.disconnect()
     return
   }
