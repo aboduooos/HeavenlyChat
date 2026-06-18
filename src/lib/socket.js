@@ -11,7 +11,7 @@ export function connectSocket(token) {
 
   socket = io(SERVER || undefined, {
     auth: { token },
-    transports: ["polling"],
+    transports: ["websocket", "polling"],
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
