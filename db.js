@@ -51,6 +51,17 @@ if (process.env.DATABASE_URL) {
     );
     CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
     CREATE INDEX IF NOT EXISTS idx_messages_username ON messages(username);
+    CREATE TABLE IF NOT EXISTS analytics (
+      id SERIAL PRIMARY KEY,
+      site TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      path TEXT,
+      referrer TEXT,
+      ip TEXT,
+      user_agent TEXT,
+      extra JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `)
   try { db.exec(`ALTER TABLE users ADD COLUMN IF NOT EXISTS text_color VARCHAR(7) DEFAULT '#e5e5e5'`) } catch (e) {}
 } else {
@@ -82,6 +93,7 @@ if (process.env.DATABASE_URL) {
   try { db.exec("ALTER TABLE users ADD COLUMN text_color TEXT DEFAULT '#e5e5e5'") } catch (e) {}
   try { db.exec("ALTER TABLE messages ADD COLUMN type TEXT NOT NULL DEFAULT 'text'") } catch (e) {}
   try { db.exec("ALTER TABLE messages ADD COLUMN media TEXT") } catch (e) {}
+  try { db.exec(`CREATE TABLE IF NOT EXISTS analytics (id INTEGER PRIMARY KEY AUTOINCREMENT, site TEXT NOT NULL, event_type TEXT NOT NULL, path TEXT, referrer TEXT, ip TEXT, user_agent TEXT, extra TEXT, created_at TEXT DEFAULT (datetime('now')))`) } catch (e) {}
 }
 
 async function createUser(username, passwordHash, avatar, textColor) {
@@ -164,4 +176,43 @@ async function clearMessages() {
   }
 }
 
-module.exports = { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages }
+async function logEvent(site, eventType, data = {}) {
+  const { path, referrer, ip, userAgent, extra } = data
+  if (process.env.DATABASE_URL) {
+    await db.run(
+      "INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      [site, eventType, path || null, referrer || null, ip || null, userAgent || null, extra ? JSON.stringify(extra) : null]
+    )
+  } else {
+    const stmt = db.prepare("INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    stmt.run(site, eventType, path || null, referrer || null, ip || null, userAgent || null, extra ? JSON.stringify(extra) : null)
+  }
+}
+
+async function getAnalytics(site) {
+  if (process.env.DATABASE_URL) {
+    return await db.all("SELECT * FROM analytics WHERE site = $1 ORDER BY created_at DESC LIMIT 1000", [site])
+  } else {
+    return db.prepare("SELECT * FROM analytics WHERE site = ? ORDER BY created_at DESC LIMIT 1000").all(site)
+  }
+}
+
+async function getAnalyticsSummary(site) {
+  if (process.env.DATABASE_URL) {
+    const total = await db.get("SELECT COUNT(*) AS count FROM analytics WHERE site = $1", [site])
+    const pageviews = await db.get("SELECT COUNT(*) AS count FROM analytics WHERE site = $1 AND event_type = 'pageview'", [site])
+    const clicks = await db.get("SELECT COUNT(*) AS count FROM analytics WHERE site = $1 AND event_type = 'click'", [site])
+    const uniqueIPs = await db.get("SELECT COUNT(DISTINCT ip) AS count FROM analytics WHERE site = $1 AND ip IS NOT NULL", [site])
+    const paths = await db.all("SELECT path, COUNT(*) AS count FROM analytics WHERE site = $1 AND event_type = 'pageview' GROUP BY path ORDER BY count DESC LIMIT 20", [site])
+    return { total: total.count, pageviews: pageviews.count, clicks: clicks.count, uniqueIPs: uniqueIPs.count, topPaths: paths }
+  } else {
+    const total = db.prepare("SELECT COUNT(*) AS count FROM analytics WHERE site = ?").get(site)
+    const pageviews = db.prepare("SELECT COUNT(*) AS count FROM analytics WHERE site = ? AND event_type = 'pageview'").get(site)
+    const clicks = db.prepare("SELECT COUNT(*) AS count FROM analytics WHERE site = ? AND event_type = 'click'").get(site)
+    const uniqueIPs = db.prepare("SELECT COUNT(DISTINCT ip) AS count FROM analytics WHERE site = ? AND ip IS NOT NULL").get(site)
+    const paths = db.prepare("SELECT path, COUNT(*) AS count FROM analytics WHERE site = ? AND event_type = 'pageview' GROUP BY path ORDER BY count DESC LIMIT 20").all(site)
+    return { total: total.count, pageviews: pageviews.count, clicks: clicks.count, uniqueIPs: uniqueIPs.count, topPaths: paths }
+  }
+}
+
+module.exports = { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages, logEvent, getAnalytics, getAnalyticsSummary }

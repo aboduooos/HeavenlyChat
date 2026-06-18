@@ -13,7 +13,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "chatweb-secret-key-change-in-produ
 const PORT = process.env.PORT || 3000
 
 console.log("[startup] loading db...")
-const { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages } = require("./db")
+const { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages, logEvent, getAnalytics, getAnalyticsSummary } = require("./db")
 
 if (!process.env.DATABASE_URL) {
   console.warn("[startup] DATABASE_URL not set — using SQLite (chat.db). Data will be lost on server restart!")
@@ -246,6 +246,34 @@ app.post("/api/upload", async (req, res) => {
 
   const url = await saveBase64File(data)
   res.json({ url })
+})
+
+app.post("/api/track", async (req, res) => {
+  try {
+    const { site, event_type, path, referrer, extra } = req.body
+    if (!site || !event_type) return res.status(400).json({ error: "Missing site or event_type" })
+    const ip = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket.remoteAddress
+    await logEvent(site, event_type, { path, referrer, ip, userAgent: req.headers["user-agent"], extra })
+    res.json({ ok: true })
+  } catch (err) {
+    console.error("[track] error:", err?.message || err)
+    res.status(500).json({ error: "Tracking failed" })
+  }
+})
+
+app.get("/api/analytics", async (req, res) => {
+  const auth = verifyToken(req.headers.authorization)
+  if (!auth) return res.status(401).json({ error: "Unauthorized" })
+  try {
+    const site = req.query.site
+    if (!site) return res.status(400).json({ error: "Missing site query param" })
+    const summary = await getAnalyticsSummary(site)
+    const raw = site === "all" ? null : await getAnalytics(site)
+    res.json({ summary, recent: raw })
+  } catch (err) {
+    console.error("[analytics] error:", err?.message || err)
+    res.status(500).json({ error: "Failed to get analytics" })
+  }
 })
 
 function saveBase64File(dataUrl) {
