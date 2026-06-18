@@ -97,7 +97,7 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
 
       <div style={{ marginTop: "auto", borderTop: "1px solid #2a2a2a" }}>
         <div style={{ padding: "0.6rem 1rem" }}>
-          <a href="https://nimble-cucurucho-f9ad3a.netlify.app/" target="_blank" rel="noopener noreferrer" style={{
+          <a href="https://lolitaheaven.vercel.app" target="_blank" rel="noopener noreferrer" style={{
             display: "block", padding: "0.5rem", borderRadius: "6px",
             background: "linear-gradient(135deg, #6366f1, #ec4899, #f59e0b)",
             color: "#fff", fontSize: "0.8rem", fontWeight: "bold",
