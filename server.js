@@ -248,8 +248,8 @@ app.post("/api/upload", async (req, res) => {
   res.json({ url })
 })
 
-app.post("/api/ping", (req, res) => {
-  res.json({ ok: true })
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, time: Date.now() })
 })
 
 app.post("/api/track", async (req, res) => {
