@@ -94,12 +94,16 @@ export default function Chat() {
     function onDisconnect(reason) {
       setConnected(false)
       console.warn("[socket] disconnect:", reason)
-      if (reason) setReconnectMsg("Connection lost (" + reason + ") — retrying...")
     }
 
     function onConnectError(err) {
       console.warn("[socket] connect_error:", err.message)
       setReconnectMsg("Connection error: " + err.message)
+    }
+
+    function onServerError(msg) {
+      console.warn("[socket] server error:", msg)
+      setReconnectMsg("Server: " + msg)
     }
 
     s.on("connect", onConnect)
@@ -141,15 +145,13 @@ export default function Chat() {
       setUsers(userList)
     })
 
-    s.on("error_message", (msg) => {
-      console.warn("[socket] server error:", msg)
-      setReconnectMsg("Server: " + msg)
-    })
+    s.on("error_message", onServerError)
 
     return () => {
       s.off("connect", onConnect)
       s.off("disconnect", onDisconnect)
       s.off("connect_error", onConnectError)
+      s.off("error_message", onServerError)
       disconnectSocket()
     }
   }, [token, loading, router])
