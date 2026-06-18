@@ -248,12 +248,19 @@ app.post("/api/upload", async (req, res) => {
   res.json({ url })
 })
 
+app.post("/api/ping", (req, res) => {
+  res.json({ ok: true })
+})
+
 app.post("/api/track", async (req, res) => {
   try {
-    const { site, event_type, path, referrer, extra } = req.body
+    const body = req.body
+    const site = body.site
+    const event_type = body.event_type
     if (!site || !event_type) return res.status(400).json({ error: "Missing site or event_type" })
     const ip = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket.remoteAddress
-    await logEvent(site, event_type, { path, referrer, ip, userAgent: req.headers["user-agent"], extra })
+    const ua = req.headers["user-agent"]
+    await logEvent(site, event_type, { path: body.path, referrer: body.referrer, ip, userAgent: ua, extra: body.extra })
     res.json({ ok: true })
   } catch (err) {
     console.error("[track] error:", err?.message || err)
