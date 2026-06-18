@@ -252,9 +252,14 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, time: Date.now() })
 })
 
+app.use("/api/track", express.text({ type: "*/*" }))
 app.post("/api/track", async (req, res) => {
   try {
-    const body = req.body
+    let body = req.body
+    if (typeof body === "string") {
+      try { body = JSON.parse(body) } catch (e) { body = {} }
+    }
+    if (!body || typeof body !== "object") body = {}
     const site = body.site
     const event_type = body.event_type
     if (!site || !event_type) return res.status(400).json({ error: "Missing site or event_type" })
