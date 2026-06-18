@@ -177,15 +177,15 @@ async function clearMessages() {
 }
 
 async function logEvent(site, eventType, data = {}) {
-  const { path, referrer, ip, userAgent, extra } = data
+  const { path: p, referrer, ip, userAgent, extra } = data
   if (process.env.DATABASE_URL) {
     await db.run(
       "INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [site, eventType, path || null, referrer || null, ip || null, userAgent || null, extra || null]
+      [site, eventType, p || null, referrer || null, ip || null, userAgent || null, extra || null]
     )
   } else {
     const stmt = db.prepare("INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES (?, ?, ?, ?, ?, ?, ?)")
-    stmt.run(site, eventType, path || null, referrer || null, ip || null, userAgent || null, extra ? JSON.stringify(extra) : null)
+    stmt.run(site, eventType, p || null, referrer || null, ip || null, userAgent || null, extra ? JSON.stringify(extra) : null)
   }
 }
 

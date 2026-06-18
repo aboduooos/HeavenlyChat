@@ -257,7 +257,7 @@ app.post("/api/track", async (req, res) => {
     res.json({ ok: true })
   } catch (err) {
     console.error("[track] error:", err?.message || err)
-    res.status(500).json({ error: "Tracking failed" })
+    res.status(500).json({ error: "Tracking failed", detail: err?.message || String(err) })
   }
 })
 
