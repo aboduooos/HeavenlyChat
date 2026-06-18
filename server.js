@@ -1,13 +1,6 @@
-const express = require("express")
 const http = require("http")
 const path = require("path")
 const fs = require("fs")
-const cors = require("cors")
-const { Server } = require("socket.io")
-const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
-const cloudinary = require("cloudinary").v2
-const { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages } = require("./db")
 
 process.on("unhandledRejection", (reason) => {
   console.error("[unhandledRejection]", reason)
@@ -16,12 +9,22 @@ process.on("uncaughtException", (err) => {
   console.error("[uncaughtException]", err)
 })
 
-const JWT_SECRET = process.env.JWT_SECRET || (() => { console.warn("WARNING: using default JWT_SECRET, set JWT_SECRET env var"); return "chatweb-secret-key-change-in-production" })()
+const JWT_SECRET = process.env.JWT_SECRET || "chatweb-secret-key-change-in-production"
 const PORT = process.env.PORT || 3000
 
+console.log("[startup] loading db...")
+const { createUser, getUserByUsername, updateUsername, updateAvatar, updateTextColor, saveMessage, getRecentMessages, clearMessages } = require("./db")
+
 if (!process.env.DATABASE_URL) {
-  console.warn("WARNING: DATABASE_URL not set — using SQLite (chat.db). Data will be lost on server restart!")
+  console.warn("[startup] DATABASE_URL not set — using SQLite (chat.db). Data will be lost on server restart!")
 }
+
+console.log("[startup] configuring express...")
+const express = require("express")
+const { Server } = require("socket.io")
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+const cloudinary = require("cloudinary").v2
 
 if (process.env.CLOUDINARY_URL) {
   cloudinary.config(process.env.CLOUDINARY_URL)
@@ -42,10 +45,15 @@ const io = new Server(server, {
   cors: { origin: true, methods: ["GET", "POST"], credentials: true },
   pingInterval: 120000,
   pingTimeout: 60000,
-  transports: ["websocket", "polling"],
 })
 
-app.use(cors())
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+  if (req.method === "OPTIONS") return res.sendStatus(200)
+  next()
+})
 app.use(express.json({ limit: "10mb" }))
 
 const uploadsDir = path.join(__dirname, "uploads")
@@ -358,6 +366,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal server error" })
 })
 
+console.log("[startup] listening on port " + PORT + "...")
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`[startup] Server running on http://0.0.0.0:${PORT}`)
 })
