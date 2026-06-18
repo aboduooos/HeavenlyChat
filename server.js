@@ -349,7 +349,7 @@ const outDir = path.join(__dirname, "out")
 if (fs.existsSync(outDir)) {
   app.use("/_next", express.static(path.join(outDir, "_next"), { maxAge: "1y" }))
   app.use(express.static(outDir, { maxAge: 0 }))
-  app.get("*", (req, res) => {
+  app.get("/{*any}", (req, res) => {
     if (req.path.startsWith("/api/") || req.path.startsWith("/uploads/") || req.path.startsWith("/socket.io/")) return
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
     const p = req.path === "/" ? "index.html" : `${req.path}.html`
