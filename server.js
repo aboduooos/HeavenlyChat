@@ -43,8 +43,8 @@ app.set("env", "production")
 
 const io = new Server(server, {
   cors: { origin: true, methods: ["GET", "POST"], credentials: true },
-  pingInterval: 120000,
-  pingTimeout: 60000,
+  pingInterval: 25000,
+  pingTimeout: 20000,
 })
 
 app.use((req, res, next) => {

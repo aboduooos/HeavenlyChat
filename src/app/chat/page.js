@@ -24,6 +24,7 @@ export default function Chat() {
   const [unread, setUnread] = useState(0)
   const unreadRef = useRef(0)
   const [showReconnect, setShowReconnect] = useState(false)
+  const [reconnectMsg, setReconnectMsg] = useState("Connection lost — retrying...")
   const [showGifs, setShowGifs] = useState(false)
 
   useEffect(() => {
@@ -87,14 +88,18 @@ export default function Chat() {
 
     function onConnect() {
       setConnected(true)
+      setReconnectMsg("Connection lost — retrying...")
     }
 
-    function onDisconnect() {
+    function onDisconnect(reason) {
       setConnected(false)
+      console.warn("[socket] disconnect:", reason)
+      if (reason) setReconnectMsg("Connection lost (" + reason + ") — retrying...")
     }
 
     function onConnectError(err) {
       console.warn("[socket] connect_error:", err.message)
+      setReconnectMsg("Connection error: " + err.message)
     }
 
     s.on("connect", onConnect)
@@ -231,7 +236,7 @@ export default function Chat() {
             textAlign: "center", padding: "0.5rem", fontSize: "0.85rem",
             background: "#1e1a1a", color: "#f87171", borderBottom: "1px solid #3a2a2a",
           }}>
-            Connection lost — retrying...
+            {reconnectMsg}
           </div>
         )}
         <ChatMessages messages={messages} username={username} />
