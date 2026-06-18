@@ -181,7 +181,7 @@ async function logEvent(site, eventType, data = {}) {
   if (process.env.DATABASE_URL) {
     await db.run(
       "INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [site, eventType, path || null, referrer || null, ip || null, userAgent || null, extra ? JSON.stringify(extra) : null]
+      [site, eventType, path || null, referrer || null, ip || null, userAgent || null, extra || null]
     )
   } else {
     const stmt = db.prepare("INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES (?, ?, ?, ?, ?, ?, ?)")
