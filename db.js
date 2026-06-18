@@ -55,7 +55,7 @@ if (process.env.DATABASE_URL) {
       id SERIAL PRIMARY KEY,
       site TEXT NOT NULL,
       event_type TEXT NOT NULL,
-      path TEXT,
+      page_path TEXT,
       referrer TEXT,
       ip TEXT,
       user_agent TEXT,
@@ -64,6 +64,7 @@ if (process.env.DATABASE_URL) {
     );
   `)
   try { db.exec(`ALTER TABLE users ADD COLUMN IF NOT EXISTS text_color VARCHAR(7) DEFAULT '#e5e5e5'`) } catch (e) {}
+  try { db.exec(`ALTER TABLE analytics ADD COLUMN IF NOT EXISTS page_path TEXT`) } catch (e) {}
 } else {
   const Database = require("better-sqlite3")
   db = new Database(path.join(__dirname, "chat.db"))
@@ -93,7 +94,7 @@ if (process.env.DATABASE_URL) {
   try { db.exec("ALTER TABLE users ADD COLUMN text_color TEXT DEFAULT '#e5e5e5'") } catch (e) {}
   try { db.exec("ALTER TABLE messages ADD COLUMN type TEXT NOT NULL DEFAULT 'text'") } catch (e) {}
   try { db.exec("ALTER TABLE messages ADD COLUMN media TEXT") } catch (e) {}
-  try { db.exec(`CREATE TABLE IF NOT EXISTS analytics (id INTEGER PRIMARY KEY AUTOINCREMENT, site TEXT NOT NULL, event_type TEXT NOT NULL, path TEXT, referrer TEXT, ip TEXT, user_agent TEXT, extra TEXT, created_at TEXT DEFAULT (datetime('now')))`) } catch (e) {}
+  try { db.exec(`CREATE TABLE IF NOT EXISTS analytics (id INTEGER PRIMARY KEY AUTOINCREMENT, site TEXT NOT NULL, event_type TEXT NOT NULL, page_path TEXT, referrer TEXT, ip TEXT, user_agent TEXT, extra TEXT, created_at TEXT DEFAULT (datetime('now')))`) } catch (e) {}
 }
 
 async function createUser(username, passwordHash, avatar, textColor) {
@@ -180,11 +181,11 @@ async function logEvent(site, eventType, data = {}) {
   const { path: p, referrer, ip, userAgent, extra } = data
   if (process.env.DATABASE_URL) {
     await db.run(
-      "INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      "INSERT INTO analytics (site, event_type, page_path, referrer, ip, user_agent, extra) VALUES ($1, $2, $3, $4, $5, $6, $7)",
       [site, eventType, p || null, referrer || null, ip || null, userAgent || null, extra || null]
     )
   } else {
-    const stmt = db.prepare("INSERT INTO analytics (site, event_type, path, referrer, ip, user_agent, extra) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    const stmt = db.prepare("INSERT INTO analytics (site, event_type, page_path, referrer, ip, user_agent, extra) VALUES (?, ?, ?, ?, ?, ?, ?)")
     stmt.run(site, eventType, p || null, referrer || null, ip || null, userAgent || null, extra ? JSON.stringify(extra) : null)
   }
 }
@@ -203,14 +204,14 @@ async function getAnalyticsSummary(site) {
     const pageviews = await db.get("SELECT COUNT(*) AS count FROM analytics WHERE site = $1 AND event_type = 'pageview'", [site])
     const clicks = await db.get("SELECT COUNT(*) AS count FROM analytics WHERE site = $1 AND event_type = 'click'", [site])
     const uniqueIPs = await db.get("SELECT COUNT(DISTINCT ip) AS count FROM analytics WHERE site = $1 AND ip IS NOT NULL", [site])
-    const paths = await db.all("SELECT path, COUNT(*) AS count FROM analytics WHERE site = $1 AND event_type = 'pageview' GROUP BY path ORDER BY count DESC LIMIT 20", [site])
+    const paths = await db.all("SELECT page_path, COUNT(*) AS count FROM analytics WHERE site = $1 AND event_type = 'pageview' GROUP BY page_path ORDER BY count DESC LIMIT 20", [site])
     return { total: total.count, pageviews: pageviews.count, clicks: clicks.count, uniqueIPs: uniqueIPs.count, topPaths: paths }
   } else {
     const total = db.prepare("SELECT COUNT(*) AS count FROM analytics WHERE site = ?").get(site)
     const pageviews = db.prepare("SELECT COUNT(*) AS count FROM analytics WHERE site = ? AND event_type = 'pageview'").get(site)
     const clicks = db.prepare("SELECT COUNT(*) AS count FROM analytics WHERE site = ? AND event_type = 'click'").get(site)
     const uniqueIPs = db.prepare("SELECT COUNT(DISTINCT ip) AS count FROM analytics WHERE site = ? AND ip IS NOT NULL").get(site)
-    const paths = db.prepare("SELECT path, COUNT(*) AS count FROM analytics WHERE site = ? AND event_type = 'pageview' GROUP BY path ORDER BY count DESC LIMIT 20").all(site)
+    const paths = db.prepare("SELECT page_path, COUNT(*) AS count FROM analytics WHERE site = ? AND event_type = 'pageview' GROUP BY page_path ORDER BY count DESC LIMIT 20").all(site)
     return { total: total.count, pageviews: pageviews.count, clicks: clicks.count, uniqueIPs: uniqueIPs.count, topPaths: paths }
   }
 }
