@@ -439,4 +439,32 @@ app.use((err, req, res, next) => {
 console.log("[startup] listening on port " + PORT + "...")
 server.listen(PORT, () => {
   console.log(`[startup] Server running on http://0.0.0.0:${PORT}`)
+
+  // Start Discord DM auto-reply bot
+  const { Client, GatewayIntentBits } = require("discord.js")
+  const discordToken = process.env.DISCORD_BOT_TOKEN
+  if (discordToken) {
+    const dcClient = new Client({
+      intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.MessageContent],
+    })
+    dcClient.once("ready", () => console.log("[discord] Logged in as " + dcClient.user.tag))
+    dcClient.on("messageCreate", async (msg) => {
+      if (msg.author.bot) return
+      if (msg.channel.type !== 1) return
+      const ad = [
+        "**HeavenlyDev** — https://heavenlydev.vercel.app",
+        "Websites, apps, bots & custom software \u2014 built fast, good prices.",
+        "",
+        "**HeavenlyChat** — https://heavenlychat-px42.onrender.com",
+        "Real-time chat with file sharing, GIFs & no rules.",
+        "",
+        "**LolitaHeaven** — https://lolitaheaven.vercel.app",
+        "Premium content platform.",
+      ].join("\n")
+      try { await msg.channel.send(ad) } catch (e) { console.error("[discord] send error:", e.message) }
+    })
+    dcClient.login(discordToken).catch(e => console.error("[discord] login error:", e.message))
+  } else {
+    console.log("[discord] DISCORD_BOT_TOKEN not set, DM auto-reply disabled")
+  }
 })
