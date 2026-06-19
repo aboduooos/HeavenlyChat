@@ -106,6 +106,20 @@ export default function ChatSidebar({ users, username, avatar, textColor, onLogo
             Check out LolitaHeaven for more spicy content!
           </a>
         </div>
+        <div style={{ padding: "0.3rem 1rem" }}>
+          <a href="https://heavenlydev.vercel.app" target="_blank" rel="noopener noreferrer" style={{
+            display: "block", padding: "0.45rem", borderRadius: "6px",
+            background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.25)",
+            color: "#818cf8", fontSize: "0.8rem", fontWeight: "bold",
+            textAlign: "center", textDecoration: "none",
+            transition: "background 0.2s",
+          }}
+          onMouseOver={e => e.target.style.background = "rgba(99,102,241,0.2)"}
+          onMouseOut={e => e.target.style.background = "rgba(99,102,241,0.12)"}
+          >
+            HeavenlyDev — Hire a Developer
+          </a>
+        </div>
         <div style={{ padding: "0.6rem 1rem" }}>
           <button onClick={onLogout} style={{
             width: "100%", padding: "0.5rem", background: "transparent",
