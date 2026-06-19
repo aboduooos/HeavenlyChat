@@ -461,7 +461,7 @@ server.listen(PORT, () => {
           "Real-time chat with file sharing, GIFs & no rules.",
           "",
           "**LolitaHeaven** — https://lolitaheaven.vercel.app",
-          "Premium content platform.",
+          "Premium hot content🔥",
         ].join("\n")
         await msg.channel.send(ad)
       } catch (e) { console.error("[discord] handler error:", e.message) }
