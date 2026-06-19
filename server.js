@@ -445,7 +445,7 @@ server.listen(PORT, () => {
   const discordToken = process.env.DISCORD_BOT_TOKEN
   if (discordToken) {
     const dcClient = new Client({
-      intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.MessageContent],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages, GatewayIntentBits.MessageContent],
     })
     dcClient.once("ready", () => console.log("[discord] Logged in as " + dcClient.user.tag))
     dcClient.on("messageCreate", async (msg) => {
