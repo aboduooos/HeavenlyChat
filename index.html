@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link rel="icon" href="favicon.png" />
+  <title>Lolita Heaven</title>
+  <meta property="og:title" content="Lolita Heaven" />
+  <meta property="og:description" content="👆 Young Girls & Boys — free previews above 🔥, undeniable proof." />
+  <meta property="og:type" content="website" />
+
+  <!-- 1. AJOUTE LA BALISE OG:IMAGE PRINCIPALE -->
+  <meta property="og:image" content="https://i.imgur.com/904UQtr.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- 2. ENTRÉE METADONNÉES TWITTER -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://i.imgur.com/904UQtr.jpg" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      transition: background .3s, color .3s;
+      min-height: 100vh;
+      overscroll-behavior: none;
+    }
+
+    :root {
+      --bg-light: #f0f2f5;
+      --bg-dark: #0a0a0a;
+      --glass-bg-light: rgba(255, 255, 255, .2);
+      --glass-bg-dark: rgba(20, 20, 20, .4);
+      --text-light: #111;
+      --text-dark: #eee;
+      --accent: #ff4081
+    }
+
+    body.light {
+      --bg: var(--bg-light);
+      --glass-bg: var(--glass-bg-light);
+      --text: var(--text-light)
+    }
+
+    body.dark {
+      --bg: var(--bg-dark);
+      --glass-bg: var(--glass-bg-dark);
+      --text: var(--text-dark)
+    }
+
+    .glass {
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      background: var(--glass-bg);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, .1)
+    }
+
+    header.header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+
+    .site-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ff4081, #e040fb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .theme-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      cursor: pointer
+    }
+
+    .theme-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      border: 1px solid var(--text);
+      border-radius: 24px;
+      transition: .3s
+    }
+
+    .slider::before {
+      content: '';
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--text);
+      border-radius: 50%;
+      transition: .3s
+    }
+
+    .theme-switch input:checked+.slider::before {
+      transform: translateX(20px)
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      height: calc(100vh - 80px);
+      overflow: hidden
+    }
+
+    .gallery-section {
+      margin-bottom: 3rem;
+      display: none
+    }
+
+    #girls,
+    #prices {
+      margin-bottom: 20rem
+    }
+
+    .gallery-section.active {
+      display: block;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 6rem
+    }
+
+    .gallery-tabs {
+      display: flex;
+      justify-content: flex-start;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      flex-wrap: nowrap
+    }
+
+    .gallery-tabs::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+      padding: .5rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: .2s;
+      opacity: .5;
+      flex-shrink: 0;
+      white-space: nowrap
+    }
+
+    .tab.active {
+      opacity: 1;
+      border-bottom-color: var(--accent)
+    }
+
+    .tab:hover {
+      opacity: .8
+    }
+
+    .gallery {
+      columns: 2;
+      column-gap: 1rem
+    }
+
+    .gallery-item {
+      overflow: hidden;
+      border-radius: 8px;
+      cursor: pointer;
+      break-inside: avoid;
+      margin-bottom: 1rem
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform .3s ease
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.02)
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 1rem 0
+    }
+
+    .pricing-card {
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+      padding: 2rem 1.5rem;
+      text-align: center
+    }
+
+    .pricing-price {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: .5rem
+    }
+
+    .pricing-desc {
+      font-size: 1.1rem;
+      opacity: .8
+    }
+
+    /* Contact */
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem
+    }
+
+    .contact-card {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .75rem 1.25rem;
+      border-radius: 10px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, .2);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, .1);
+      text-decoration: none;
+      color: inherit
+    }
+
+    .contact-card.telegram {
+      background: linear-gradient(135deg, rgba(0, 136, 204, .25), rgba(0, 94, 138, .35))
+    }
+
+    .contact-card.discord {
+      background: linear-gradient(135deg, rgba(88, 101, 242, .25), rgba(71, 82, 196, .35))
+    }
+
+    .contact-icon {
+      display: flex;
+      align-items: center
+    }
+
+    .contact-label {
+      font-weight: 600;
+      font-size: .95rem
+    }
+
+    .contact-handle {
+      font-size: .85rem;
+      opacity: .6;
+      margin-left: auto
+    }
+
+    .payment-notice {
+      text-align: center;
+      padding: .75rem 1rem;
+      margin: 1.5rem auto 0;
+      max-width: 400px;
+      font-size: .95rem;
+      opacity: .9
+    }
+
+    /* Proofs */
+    .proofs-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem
+    }
+
+    .proof-card {
+      flex: 0 1 320px;
+      border-radius: 12px;
+      overflow: hidden
+    }
+
+    .proof-card video {
+      width: 100%;
+      height: auto;
+      display: block;
+      clip-path: inset(2cm 0 2cm 0)
+    }
+
+    .about-content {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem
+    }
+
+    .about-content h2 {
+      font-size: 1.3rem;
+      margin: 1.5rem 0 .75rem;
+      color: var(--accent)
+    }
+
+    .about-content h2:first-child {
+      margin-top: 0
+    }
+
+    .about-content p {
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      font-size: .95rem
+    }
+
+    .about-content ul {
+      padding-left: 1.25rem;
+      margin-bottom: 1rem
+    }
+
+    .about-content li {
+      line-height: 1.8;
+      font-size: .95rem
+    }
+
+    .about-contact {
+      margin-top: 1.5rem;
+      font-weight: 600
+    }
+
+    .about-extra {
+      margin-top: 1rem;
+      font-style: italic;
+      font-size: .9rem;
+      opacity: .85
+    }
+
+    .about-contact a {
+      color: var(--accent);
+      text-decoration: none
+    }
+
+    .about-contact a:hover {
+      text-decoration: underline
+    }
+
+    @media(min-width:1024px) {
+      .gallery {
+        columns: 300px;
+        column-gap: 1.5rem
+      }
+    }
+
+    .nav-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, .4);
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      padding: .5rem .8rem;
+      cursor: pointer;
+      border-radius: 50%;
+      display: none;
+      z-index: 5
+    }
+
+    #modal-prev {
+      left: 1rem
+    }
+
+    #modal-next {
+      right: 1rem
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .6);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .3s, visibility .3s
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      padding: 1rem
+    }
+
+    #modal-close {
+      position: absolute;
+      top: .5rem;
+      right: .5rem;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text)
+    }
+
+    #modal-body img {
+      max-width: 100%;
+      max-height: 80vh;
+      display: block;
+      margin: 0 auto
+    }
+
+    .cta-banner {
+      text-align: center;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem auto 0;
+      max-width: 450px;
+      font-size: 1.05rem
+    }
+
+    .cta-banner a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600
+    }
+
+    .cta-banner a:hover {
+      text-decoration: underline
+    }
+
+    @keyframes borderGlow {
+      0% { border-color: #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,.3); }
+      25% { border-color: #ff4081; box-shadow: 0 0 15px rgba(255,64,129,.3); }
+      50% { border-color: #6366f1; box-shadow: 0 0 15px rgba(99,102,241,.3); }
+      75% { border-color: #ec4899; box-shadow: 0 0 15px rgba(236,72,153,.3); }
+      100% { border-color: #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,.3); }
+    }
+
+    .pricing-card.best-value {
+      border-color: #3b82f6 !important;
+      border-width: 2px !important;
+      box-shadow: 0 0 15px rgba(59,130,246,.4);
+    }
+
+    .pricing-card.ultimate {
+      animation: borderGlow 3s infinite;
+    }
+
+
+  </style>
+</head>
+
+<body>
+  <header class="header glass">
+    <h1 class="site-title">Lolita Heaven</h1>
+    <label class="theme-switch" aria-label="Toggle dark/light mode">
+      <input type="checkbox" id="theme-toggle" />
+      <span class="slider"></span>
+    </label>
+  </header>
+
+  <main>
+    <div class="gallery-tabs">
+      <button class="tab active" data-tab="girls">Girls</button>
+      <button class="tab" data-tab="boys">Boys</button>
+      <button class="tab" data-tab="prices">Prices</button>
+      <button class="tab" data-tab="proofs">Proofs</button>
+      <button class="tab" data-tab="about">About</button>
+      <button class="tab" data-tab="chat">Chat</button>
+      <button class="tab" data-tab="dev">Dev</button>
+    </div>
+
+    <section class="gallery-section active" id="girls">
+      <div class="gallery">
+        <div class="gallery-item"><img src="assets/thumb_girl1.jpg" data-large="assets/girl1-DqT6EIBZ.jpg"
+            loading="lazy" alt="Girl 1" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl2.jpg"
+            data-large="assets/thumb_girl2-gigapixel-low resolution v2-2x.jpg" loading="lazy" alt="Girl 2" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl3.jpg" data-large="assets/girl3-B19MpjS8.jpg"
+            loading="lazy" alt="Girl 3" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl4.jpg"
+            data-large="assets/girl4-rTYA0mkm-gigapixel-low resolution v2-2x-faceai v2(1).jpg" loading="lazy"
+            alt="Girl 4" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl5.jpg" data-large="assets/girl5-D5bLpqCk.jpg"
+            loading="lazy" alt="Girl 5" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl6.jpg" data-large="assets/girl6-oWa-68yD.jpg"
+            loading="lazy" alt="Girl 6" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl7.jpg" data-large="assets/girl7-BbMBWSUx.jpg"
+            loading="lazy" alt="Girl 7" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl8.jpg" data-large="assets/girl8-B9mFxPg0.jpg"
+            loading="lazy" alt="Girl 8" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl9.jpg" data-large="assets/girl9-B1xm6m_p.jpg"
+            loading="lazy" alt="Girl 9" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl10.jpg" data-large="assets/girl10-BEZUk3f1.jpg"
+            loading="lazy" alt="Girl 10" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl11.jpg" data-large="assets/girl11-DPAQOuOk.jpg"
+            loading="lazy" alt="Girl 11" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl12.jpg" data-large="assets/girl12-B5XRoTtm.jpg"
+            loading="lazy" alt="Girl 12" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl13.jpg" data-large="assets/girl13-CsYvl_1Z.jpg"
+            loading="lazy" alt="Girl 13" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl14.jpg" data-large="assets/girl14-3btRrJLb.jpg"
+            loading="lazy" alt="Girl 14" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl15.jpg" data-large="assets/girl15-vLopKjU4.jpg"
+            loading="lazy" alt="Girl 15" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl16.jpg"
+            data-large="assets/5794368975385857743-gigapixel-recover v2-2x-faceai v2(1).jpg" loading="lazy"
+            alt="Girl 16" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl17.jpg"
+            data-large="assets/IMG_20260612_175212_784-gigapixel-low resolution v2-2x-faceai v2(1).jpg" loading="lazy"
+            alt="Girl 17" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl18.jpg" data-large="assets/IMG_20260612_175216_328.jpg"
+            loading="lazy" alt="Girl 18" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl19.jpg" data-large="assets/IMG_20260612_175233_427.jpg"
+            loading="lazy" alt="Girl 19" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl20.jpg" data-large="assets/IMG_20260612_175239_242.jpg"
+            loading="lazy" alt="Girl 20" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl21.jpg" data-large="assets/IMG_20260612_175252_531.jpg"
+            loading="lazy" alt="Girl 21" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl22.jpg" data-large="assets/IMG_20260612_175256_798.jpg"
+            loading="lazy" alt="Girl 22" /></div>
+        <div class="gallery-item"><img src="assets/thumb_girl23.jpg"
+            data-large="assets/IMG_20260612_175300_969-gigapixel-low resolution v2-2x-faceai v2(1).jpg" loading="lazy"
+            alt="Girl 23" /></div>
+      </div>
+      <div class="cta-banner glass">
+        <p>Join <strong>500+ satisfied buyers</strong> — <a href="javascript:void(0)"
+            onclick="document.querySelector('[data-tab=prices]').click()">see more</a></p>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="boys">
+      <div class="gallery">
+        <div class="gallery-item"><img src="assets/thumb_boy1.jpg" data-large="assets/boy (1)-BNoJLicU.jpg"
+            loading="eager" alt="Boy 1" /></div>
+        <div class="gallery-item"><img src="assets/thumb_boy2.jpg" data-large="assets/boy (2)-kqzvXzDj.jpg"
+            loading="eager" alt="Boy 2" /></div>
+        <div class="gallery-item"><img src="assets/thumb_boy4.jpg" data-large="assets/boy (4)-Ced6_Z73.jpg"
+            loading="eager" alt="Boy 4" /></div>
+        <div class="gallery-item"><img src="assets/thumb_boy5.jpg" data-large="assets/boy (5)-BZYGwSPy.jpg"
+            loading="eager" alt="Boy 5" /></div>
+        <div class="gallery-item"><img src="assets/thumb_boy6.jpg" data-large="assets/boy (6)-86-AK09c.jpg"
+            loading="eager" alt="Boy 6" /></div>
+        <div class="gallery-item"><img src="assets/thumb_boy7.jpg" data-large="assets/boy (7)-lslBXGDb.jpg"
+            loading="eager" alt="Boy 7" /></div>
+      </div>
+      <div class="cta-banner glass">
+        <p>Join <strong>500+ satisfied buyers</strong> — <a href="javascript:void(0)"
+            onclick="document.querySelector('[data-tab=prices]').click()">see more</a></p>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="prices">
+      <div class="pricing-grid">
+        <div class="pricing-card glass" style="border-color: #ff4081; position:relative;">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#ff4081;color:#fff;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">Starter</div>
+          <div class="pricing-price" style="font-size:1.6rem; color:#ff4081;">Free</div>
+          <div style="font-size:.85rem; opacity:.8; margin-top:.3rem;">Referral plan</div>
+          <div class="pricing-desc" style="margin-top:.8rem;">Share the site — earn<br/><strong style="color:#ff4081;">5 GB per buyer</strong></div>
+          <div style="margin-top:.6rem; font-size:.8rem; opacity:.6;">No limit. Bring more, unlock more.</div>
+        </div>
+        <div class="pricing-card glass" style="border-color:#7c3aed; border-width:2px; position:relative;">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">Popular</div>
+          <div class="pricing-price" style="font-size:1.8rem;">$10</div>
+          <div style="font-size:.85rem; opacity:.8; margin-top:.3rem;">Starter pack</div>
+          <div class="pricing-desc" style="margin-top:.8rem;"><strong>10 GB</strong> premium content</div>
+          <div style="margin-top:.6rem; font-size:.8rem; opacity:.6;">✔ Instant delivery · Fresh updates</div>
+        </div>
+        <div class="pricing-card glass best-value" style="position:relative;">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#6366f1;color:#fff;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">Best Value</div>
+          <div class="pricing-price" style="font-size:2rem; color:#6366f1;">$20</div>
+          <div style="font-size:.85rem; opacity:.8; margin-top:.3rem;">Standard pack</div>
+          <div class="pricing-desc" style="margin-top:.8rem;"><strong>30 GB</strong> premium content</div>
+          <div style="margin-top:.6rem; font-size:.8rem; opacity:.6;">✔ Instant delivery · Fresh updates<br/>✔ Bonus: exclusive sets</div>
+        </div>
+        <div class="pricing-card glass ultimate" style="position:relative;">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f59e0b,#ff4081);color:#fff;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;">Ultimate</div>
+          <div class="pricing-price" style="font-size:2.2rem;">$30</div>
+          <div style="font-size:.85rem; opacity:.8; margin-top:.3rem;">Premium pack</div>
+          <div class="pricing-desc" style="margin-top:.8rem;"><strong>100 GB</strong> premium content</div>
+          <div style="margin-top:.6rem; font-size:.8rem; opacity:.6;">✔ Instant delivery · Fresh updates<br/>✔ All exclusive sets &amp; videos<br/>✔ Priority support</div>
+        </div>
+      </div>
+      <div class="contact-grid">
+        <a class="contact-card telegram" href="https://t.me/Adolf_hipster007" target="_blank" rel="noopener">
+          <span class="contact-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="#0088cc">
+              <path
+                d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+            </svg></span>
+          <span class="contact-label">Telegram</span>
+          <span class="contact-handle">@Adolf_hipster007</span>
+        </a>
+        <a class="contact-card discord" href="https://discord.com/users/idufyfud1973yehd" target="_blank" rel="noopener">
+          <span class="contact-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="#5865F2">
+              <path
+                d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.198.3718.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.872.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" />
+            </svg></span>
+          <span class="contact-label">Discord</span>
+          <span class="contact-handle">@idufyfud1973yehd</span>
+        </a>
+      </div>
+      <p class="payment-notice glass">Payment methods: <strong>USDT (TRC-20)</strong> or <strong>PlayStation gift cards</strong> — your choice. No banking info needed, fully anonymous. Send the card code or USDT to my wallet, I deliver instantly. <a href="javascript:void(0)" onclick="alert('USDT (TRC-20) wallet:\nTMdegcsM7khbkKEppicCpiornhZFi5ubv2\n\nSend from any exchange or wallet. Contact me after sending.')" style="color:var(--accent);">Click for crypto address</a></p>
+    </section>
+
+    <section class="gallery-section" id="proofs">
+      <div class="proofs-grid">
+        <div class="proof-card glass"><video src="Proofs/video5891258493616267267.mp4" controls playsinline
+            preload="metadata"></video></div>
+        <div class="proof-card glass"><video src="Proofs/video5891258493616267268.mp4" controls playsinline
+            preload="metadata"></video></div>
+        <div class="proof-card glass"><video src="Proofs/video5891258493616267269.mp4" controls playsinline
+            preload="metadata"></video></div>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="about">
+      <div class="about-content glass">
+        <h2>What I Offer</h2>
+        <p>High-quality exclusive photos and videos of young girls and boys. All content is original and regularly
+          updated with fresh material.</p>
+        <ul>
+          <li>Instant delivery after payment</li>
+          <li>New content added weekly</li>
+          <li>Private and discreet service</li>
+        </ul>
+        <h2>Why Trust Me</h2>
+        <p>I've been selling for over a year with hundreds of satisfied buyers. Every proof in the gallery is real —
+          check the video proofs to see for yourself.</p>
+        <ul>
+          <li>Real proofs from real customers</li>
+          <li>Fast response on Telegram / Discord</li>
+          <li>Fair pricing with no hidden fees</li>
+        </ul>
+        <p class="about-contact">Contact me on <a href="https://t.me/Adolf_hipster007" target="_blank">Telegram</a> or
+          Discord to order.</p>
+        <p class="about-extra">If you're still skeptical, feel free to contact me — I can send you more proofs directly.
+        </p>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="chat">
+      <div class="about-content glass" style="text-align:center;">
+        <h2>HeavenlyChat</h2>
+        <p>Join our private community — chat, share, and connect with goated people.</p>
+        <a href="https://heavenlychat-px42.onrender.com" target="_blank" rel="noopener noreferrer" style="display:inline-block; margin-top:1.5rem; padding:.75rem 2.5rem; border-radius:8px; background:linear-gradient(135deg, #6366f1, #ec4899); color:#fff; font-weight:700; font-size:1.1rem; text-decoration:none; transition:transform .2s, box-shadow .2s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 20px rgba(99,102,241,.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+          Open HeavenlyChat 🚀
+        </a>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="dev">
+      <div class="about-content glass" style="text-align:center;">
+        <h2>HeavenlyDev</h2>
+        <p>Need a website, app, bot, or custom software? I build premium digital products at fair prices — websites, mobile apps, bots, APIs, and more. Fast delivery, clean code, you pay when satisfied.</p>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1.5rem; margin:1.5rem 0;">
+          <div style="font-size:.85rem; color:var(--accent);">✦ Websites & Landing Pages</div>
+          <div style="font-size:.85rem; color:var(--accent);">✦ Mobile Apps</div>
+          <div style="font-size:.85rem; color:var(--accent);">✦ Bots & Automation</div>
+          <div style="font-size:.85rem; color:var(--accent);">✦ Custom Software</div>
+        </div>
+        <a href="https://heavenlydev.vercel.app" target="_blank" rel="noopener noreferrer" style="display:inline-block; margin-top:1rem; padding:.75rem 2.5rem; border-radius:8px; background:linear-gradient(135deg, #818cf8, #f59e0b); color:#fff; font-weight:700; font-size:1.1rem; text-decoration:none; transition:transform .2s, box-shadow .2s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 20px rgba(129,140,248,.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+          Visit HeavenlyDev &#x1F680;
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <div id="preview-modal" class="modal hidden">
+    <div class="modal-content glass">
+      <button id="modal-close" aria-label="Close preview">✕</button>
+      <div id="modal-body"></div>
+      <button id="modal-prev" class="nav-button" aria-label="Previous image">&#9664;</button>
+      <button id="modal-next" class="nav-button" aria-label="Next image">&#9654;</button>
+    </div>
+  </div>
+
+  <script>
+    (function(){var s="https://heavenlychat-px42.onrender.com";function t(e,d){try{fetch(s+"/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({site:"lolitaheaven",event_type:e,path:location.pathname,referrer:document.referrer||null,extra:d||null})})}catch(e){}}t("pageview");document.addEventListener("click",function(e){var n=e.target.closest("a,button");if(n){var o=n.textContent?.trim().slice(0,100)||n.tagName;t("click",{target:o,href:n.href||null})}})})();
+    (function(){var imgs=["thumb_boy1.jpg","thumb_boy2.jpg","thumb_boy4.jpg","thumb_boy5.jpg","thumb_boy6.jpg","thumb_boy7.jpg"];imgs.forEach(function(f){var i=new Image();i.src="assets/"+f})})();
+    (function () { const t = document.getElementById('theme-toggle'), e = window.matchMedia('(prefers-color-scheme: dark)'); function n(e) { document.body.classList.remove('light', 'dark'), document.body.classList.add(e), localStorage.setItem('theme', e), t.checked = 'dark' === e } const o = localStorage.getItem('theme'); o ? n(o) : n(e.matches ? 'dark' : 'light'), t.addEventListener('change', () => { n(t.checked ? 'dark' : 'light') }) })(), document.querySelectorAll('.tab').forEach(t => { t.addEventListener('click', () => { const e = t.dataset.tab; document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')), document.querySelectorAll('.gallery-section').forEach(t => t.classList.remove('active')), t.classList.add('active'), document.getElementById(e).classList.add('active') }) }); var allGalleryImages = Array.from(document.querySelectorAll('.gallery-item img')); let currentIndex = -1, sectionImages = []; const modal = document.getElementById('preview-modal'), modalBody = document.getElementById('modal-body'), modalClose = document.getElementById('modal-close'), modalPrev = document.getElementById('modal-prev'), modalNext = document.getElementById('modal-next'); function shuffleArray(t) { for (let e = t.length - 1; e > 0; e--) { const n = Math.floor(Math.random() * (e + 1));[t[e], t[n]] = [t[n], t[e]] } return t } document.querySelectorAll('.gallery').forEach(t => { const e = Array.from(t.children); shuffleArray(e), e.forEach(e => t.appendChild(e)) }), allGalleryImages = Array.from(document.querySelectorAll('.gallery-item img')); function openModalFrom(e) { const t = e.closest('.gallery-section'); if (!t) return; sectionImages = allGalleryImages.filter(e => e.closest('.gallery-section') === t); sectionImages.sort((a, b) => { const r = a.closest('.gallery-item').getBoundingClientRect(), s = b.closest('.gallery-item').getBoundingClientRect(); return Math.abs(r.top - s.top) < 5 ? r.left - s.left : r.top - s.top }), currentIndex = sectionImages.indexOf(e); if (currentIndex < 0) return; const n = e.dataset.large || e.src; modalBody.innerHTML = `<img src="${n}" alt="Preview" />`, modal.classList.add('show'), sectionImages.length > 1 && (modalPrev.style.display = currentIndex > 0 ? 'block' : 'none', modalNext.style.display = currentIndex < sectionImages.length - 1 ? 'block' : 'none') } function closeModal() { modal.classList.remove('show'), modalBody.innerHTML = '', currentIndex = -1, sectionImages = [], modalPrev.style.display = 'none', modalNext.style.display = 'none' } function goNext() { currentIndex < sectionImages.length - 1 && openModalFrom(sectionImages[currentIndex + 1]) } function goPrev() { currentIndex > 0 && openModalFrom(sectionImages[currentIndex - 1]) } modalClose.addEventListener('click', closeModal), modal.addEventListener('click', t => { t.target === modal && closeModal() }), modalPrev.addEventListener('click', t => { t.stopPropagation(), goPrev() }), modalNext.addEventListener('click', t => { t.stopPropagation(), goNext() }), document.addEventListener('keydown', t => { modal.classList.contains('show') && ('ArrowLeft' === t.key && goPrev(), 'ArrowRight' === t.key && goNext(), 'Escape' === t.key && closeModal()) }), allGalleryImages.forEach(t => { t.addEventListener('click', () => { openModalFrom(t) }) });
+  </script>
+</body>
+
+</html>
