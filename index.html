@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HeavenlyDev — Premium Development Services</title>
+  <meta property="og:title" content="HeavenlyDev — Premium Development Services" />
+  <meta property="og:description" content="Websites, mobile apps, bots & custom software — built fast, good prices. Pay on delivery. Contact me on Telegram or Discord." />
+  <meta property="og:type" content="website" />
+   <meta property="og:image" content="https://heavenlydev.vercel.app/favicon.png" />
+   <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="/favicon.png" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #07070a;
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #07070a; }
+    ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3a3a4a; }
+
+    /* ── Background effects ── */
+    #gradient-bg {
+      position: fixed; inset: 0; z-index: -1;
+      background: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 50%, rgba(236,72,153,.08) 0%, transparent 50%);
+    }
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: -1;
+      background-image: linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 4rem;
+      background: rgba(7,7,10,.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      transition: background .3s;
+    }
+    .logo {
+      font-size: 1.4rem; font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #ec4899);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: #a0a0b0; text-decoration: none; font-size: .9rem;
+      font-weight: 500; transition: color .3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 2px; background: linear-gradient(90deg, #818cf8, #ec4899);
+      transform: scaleX(0); transition: transform .3s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-contact {
+      padding: .5rem 1.2rem; border-radius: 8px;
+      background: linear-gradient(135deg, #818cf8, #ec4899);
+      color: #fff; text-decoration: none; font-weight: 600; font-size: .85rem;
+      transition: transform .2s, box-shadow .3s;
+    }
+    .nav-contact:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(129,140,248,.4); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      padding: 6rem 2rem 4rem;
+    }
+    .hero-badge {
+      display: inline-block; padding: .4rem 1.2rem; border-radius: 100px;
+      background: rgba(129,140,248,.1); border: 1px solid rgba(129,140,248,.2);
+      color: #818cf8; font-size: .8rem; font-weight: 600; margin-bottom: 1.5rem;
+      letter-spacing: .5px;
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5rem); font-weight: 800;
+      line-height: 1.1; max-width: 800px; margin-bottom: 1.2rem;
+    }
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #818cf8, #ec4899, #f59e0b);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.15rem; color: #8888a0; max-width: 600px;
+      margin-bottom: 2.5rem; line-height: 1.7;
+    }
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      padding: .9rem 2.2rem; border-radius: 10px;
+      background: linear-gradient(135deg, #818cf8, #ec4899);
+      color: #fff; font-weight: 700; font-size: 1rem;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: transform .2s, box-shadow .3s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(129,140,248,.35); }
+    .btn-outline {
+      padding: .9rem 2.2rem; border-radius: 10px;
+      background: transparent; color: #e0e0e0; font-weight: 600; font-size: 1rem;
+      text-decoration: none; border: 1px solid rgba(255,255,255,.15);
+      transition: background .3s, border-color .3s;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.3); }
+
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4rem;
+      padding: 1.5rem 3rem; border-radius: 16px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+    }
+    .hero-stats div { text-align: center; }
+    .hero-stats .num { font-size: 1.8rem; font-weight: 800; color: #fff; }
+    .hero-stats .label { font-size: .8rem; color: #6666a0; margin-top: 2px; }
+
+    /* ── Sections common ── */
+    section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+    .section-label {
+      display: inline-block; font-size: .75rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: #818cf8; margin-bottom: .5rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: #fff;
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      color: #8888a0; max-width: 550px; font-size: 1.05rem; line-height: 1.7;
+    }
+
+    /* ── Services ── */
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .service-card {
+      padding: 2rem; border-radius: 16px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+    .service-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(129,140,248,.3);
+      box-shadow: 0 8px 30px rgba(0,0,0,.3);
+    }
+    .service-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .service-card h3 { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: .6rem; }
+    .service-card p { color: #8888a0; font-size: .9rem; line-height: 1.6; }
+    .service-card .price-tag {
+      display: inline-block; margin-top: 1rem;
+      padding: .3rem .8rem; border-radius: 6px;
+      background: rgba(129,140,248,.1); color: #818cf8;
+      font-size: .8rem; font-weight: 600;
+    }
+
+    /* ── Process ── */
+    .process-steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem; margin-top: 3rem;
+    }
+    .step {
+      text-align: center; padding: 2rem 1rem;
+    }
+    .step-num {
+      width: 48px; height: 48px; line-height: 48px; border-radius: 50%;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, rgba(129,140,248,.2), rgba(236,72,153,.2));
+      color: #818cf8; font-weight: 800; font-size: 1.2rem;
+    }
+    .step h3 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: .5rem; }
+    .step p { color: #8888a0; font-size: .88rem; line-height: 1.6; }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+      margin-top: 3rem;
+    }
+    .about-text p { color: #8888a0; line-height: 1.8; margin-bottom: 1rem; font-size: 1.02rem; }
+    .about-techs { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
+    .about-techs span {
+      padding: .4rem 1rem; border-radius: 8px;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      color: #a0a0b0; font-size: .8rem; font-weight: 500;
+    }
+    .about-image {
+      position: relative; border-radius: 20px; overflow-y: auto;
+      background: linear-gradient(135deg, rgba(129,140,248,.1), rgba(236,72,153,.1));
+      border: 1px solid rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 200px;
+    }
+    .about-image .big-icon { font-size: 5rem; opacity: .3; }
+
+    /* ── Portfolio ── */
+    .portfolio-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .portfolio-card {
+      padding: 2rem; border-radius: 16px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      transition: transform .3s, border-color .3s;
+    }
+    .portfolio-card:hover {
+      transform: translateY(-4px); border-color: rgba(129,140,248,.3);
+    }
+    .portfolio-card .tag {
+      display: inline-block; padding: .2rem .6rem; border-radius: 4px;
+      background: rgba(129,140,248,.15); color: #818cf8;
+      font-size: .7rem; font-weight: 600; margin-bottom: .8rem;
+    }
+    .portfolio-card h3 { color: #fff; font-size: 1.1rem; margin-bottom: .5rem; }
+    .portfolio-card p { color: #8888a0; font-size: .85rem; line-height: 1.6; }
+
+    /* ── Pricing ── */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .pricing-card {
+      padding: 2.5rem 2rem; border-radius: 16px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      text-align: center; transition: transform .3s, border-color .3s;
+    }
+    .pricing-card.featured {
+      border-width: 2px;
+      background: rgba(129,140,248,.05);
+      transform: scale(1.03);
+    }
+    .pricing-card.featured:not(.premium) {
+      border-color: #ec4899;
+      background: rgba(236,72,153,.05);
+      box-shadow: 0 0 20px rgba(236,72,153,.2);
+    }
+    .pricing-card.premium.featured {
+      border-color: #f59e0b;
+      background: rgba(245,158,11,.05);
+      box-shadow: 0 0 25px rgba(245,158,11,.3), 0 0 60px rgba(245,158,11,.1);
+    }
+    .pricing-card.standard {
+      border-color: #818cf8;
+      border-width: 2px;
+      background: rgba(129,140,248,.05);
+      box-shadow: 0 0 20px rgba(129,140,248,.2);
+    }
+    .pricing-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+    .pricing-card.standard:hover { transform: translateY(-4px); }
+    .pricing-card .plan { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #818cf8; margin-bottom: .5rem; }
+    .pricing-card .price { font-size: 2.5rem; font-weight: 800; color: #fff; }
+    .pricing-card .price span { font-size: 1rem; font-weight: 400; color: #6666a0; }
+    .pricing-card .desc { color: #8888a0; font-size: .88rem; margin: 1rem 0 1.5rem; line-height: 1.6; }
+    .pricing-card ul { list-style: none; text-align: left; margin-bottom: 2rem; }
+    .pricing-card ul li { color: #a0a0b0; font-size: .85rem; padding: .4rem 0; }
+    .pricing-card ul li::before { content: '✓ '; color: #818cf8; font-weight: 700; }
+    .pricing-card .btn-primary { display: inline-block; padding: .7rem 2rem; font-size: .9rem; }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── Sliding words ── */
+    .word-slider {
+      display: inline-flex;
+      flex-direction: column;
+      height: 1.1em;
+      overflow: hidden;
+      vertical-align: bottom;
+      line-height: 1.1;
+    }
+    .word-slider ul {
+      display: block;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      animation: word-switch 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    .word-slider li {
+      display: block;
+      height: 1.1em;
+      line-height: 1.1;
+      text-align: left;
+      background: linear-gradient(135deg, #818cf8, #ec4899, #f59e0b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    @keyframes word-switch {
+      0%, 12% { transform: translateY(0); }
+      16%, 28% { transform: translateY(-1.1em); }
+      32%, 44% { transform: translateY(-2.2em); }
+      48%, 60% { transform: translateY(-3.3em); }
+      64%, 76% { transform: translateY(-4.4em); }
+      80%, 92% { transform: translateY(-5.5em); }
+      100% { transform: translateY(-6.6em); }
+    }
+
+    /* ── Contact / CTA ── */
+    .cta-section {
+      text-align: center; padding: 5rem 2rem;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(129,140,248,.08), rgba(236,72,153,.08));
+      border: 1px solid rgba(255,255,255,.06);
+      margin: 0 auto;
+    }
+    .cta-section h2 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: #fff; margin-bottom: 1rem; }
+    .cta-section p { color: #8888a0; max-width: 500px; margin: 0 auto 2rem; font-size: 1.05rem; line-height: 1.7; }
+    .contact-methods {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;
+    }
+    .contact-methods a {
+      padding: .8rem 1.8rem; border-radius: 10px;
+      text-decoration: none; font-weight: 600; font-size: .9rem;
+      transition: transform .2s;
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .contact-methods a:hover { transform: translateY(-2px); }
+    .contact-methods .tg { background: #0088cc; color: #fff; }
+    .contact-methods .discord-btn { background: #5865F2; color: #fff; }
+    .contact-methods .email-btn { background: rgba(255,255,255,.06); color: #e0e0e0; border: 1px solid rgba(255,255,255,.1); }
+    .payment-info {
+      margin-top: 2.5rem; padding: 1.5rem; border-radius: 12px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+      display: inline-block;
+    }
+    .payment-info p { color: #8888a0; font-size: .85rem; margin-bottom: .3rem; }
+    .payment-info .methods { color: #818cf8; font-weight: 600; font-size: .95rem; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 2rem; border-top: 1px solid rgba(255,255,255,.05);
+      color: #555570; font-size: .8rem;
+    }
+
+    /* ── Animations ── */
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero-stats { gap: 1.5rem; padding: 1.2rem 1.5rem; flex-wrap: wrap; justify-content: center; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .pricing-card.featured { transform: none; }
+      .pricing-card.featured:hover { transform: translateY(-4px); }
+      section { padding: 4rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="gradient-bg"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" style="text-decoration:none;"><div class="logo">HeavenlyDev</div></a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-contact">Let's Talk</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <span class="hero-badge">✦ Top-Rated Developer</span>
+    <h1>I Build <span class="gradient-text"><span class="word-slider"><ul><li>Premium</li><li>Elite</li><li>Flawless</li><li>Pro</li><li>Top-tier</li><li>Custom</li><li aria-hidden="true">Premium</li></ul></span> Digital Products</span> That Actually Work</h1>
+    <p>Websites, web apps, mobile apps, bots, and software — crafted with precision, delivered fast, with good prices. You dream it, I code it.</p>
+    <div class="hero-buttons">
+      <a href="#services" class="btn-primary">See My Services</a>
+      <a href="#contact" class="btn-outline">Hire Me</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="num">50+</div><div class="label">Projects Delivered</div></div>
+      <div><div class="num">100%</div><div class="label">Client Satisfaction</div></div>
+      <div><div class="num">2hr</div><div class="label">Avg. Response Time</div></div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services">
+    <span class="section-label">✦ What I Offer</span>
+    <h2 class="section-title">Full-Stack Development<br>Across Every Platform</h2>
+    <p class="section-sub">From landing pages to full-scale platforms — I handle design, development, and deployment.</p>
+    <div class="services-grid">
+      <div class="service-card fade-in">
+        <div class="service-icon">&#x1F310;</div>
+        <h3>Websites & Landing Pages</h3>
+        <p>Modern, responsive, high-performance sites. E-commerce, portfolios, business sites, and more.</p>
+        <span class="price-tag">From $20</span>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">&#x1F4F1;</div>
+        <h3>Mobile Apps</h3>
+        <p>Cross-platform apps (iOS & Android) using Flutter / React Native. Clean UI, smooth performance.</p>
+        <span class="price-tag">From $50</span>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">&#x2699;&#xFE0F;</div>
+        <h3>Custom Software</h3>
+        <p>Desktop apps, automation tools, data scrapers, admin dashboards — tailored to your needs.</p>
+        <span class="price-tag">From $30</span>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">&#x1F916;</div>
+        <h3>Bots & Automation</h3>
+        <p>Discord bots, Telegram bots, WhatsApp automation, workflow scripts — save time with automation.</p>
+        <span class="price-tag">From $15</span>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">&#x1F4CA;</div>
+        <h3>Backend & APIs</h3>
+        <p>Node.js / Express / Python backends, REST & GraphQL APIs, database design, real-time features.</p>
+        <span class="price-tag">From $25</span>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">&#x1F3A8;</div>
+        <h3>UI/UX Design</h3>
+        <p>Wireframes, prototypes, full design systems. Figma-based, pixel-perfect, user-centered design.</p>
+        <span class="price-tag">From $15</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section>
+    <span class="section-label">✦ How It Works</span>
+    <h2 class="section-title">Simple & Transparent Process</h2>
+    <p class="section-sub">No endless meetings. Just clear communication and fast delivery.</p>
+    <div class="process-steps">
+      <div class="step fade-in">
+        <div class="step-num">1</div>
+        <h3>Tell Me Your Idea</h3>
+        <p>Contact me on Telegram or Discord with your project idea, budget, and deadline.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-num">2</div>
+        <h3>I Give You a Price</h3>
+        <p>I'll quote a fixed price based on scope. No hidden fees, no surprises.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-num">3</div>
+        <h3>I Build & Deliver</h3>
+        <p>I develop your project and deliver it within the agreed timeline, fully functional.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-num">4</div>
+        <h3>You Pay on Delivery</h3>
+        <p>Pay after you receive the finished product. Your satisfaction is guaranteed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <span class="section-label">✦ About Me</span>
+    <h2 class="section-title">Skilled Developer,<br>Fair Prices, Real Results</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a full-stack developer with years of experience building websites, apps, bots, and software for clients worldwide. I specialize in creating high-quality digital products at prices that won't break your budget.</p>
+        <p>Whether you need a simple landing page or a full-featured platform, I deliver clean code, modern design, and reliable performance. Every project is built with attention to detail and tested thoroughly before delivery.</p>
+        <p><strong>Why work with me?</strong> Fast communication, no empty promises, and I never disappear halfway through a project. You pay when you're satisfied.</p>
+        <div class="about-techs">
+          <span>HTML/CSS/JS</span>
+          <span>React / Next.js</span>
+          <span>Node.js</span>
+          <span>Python</span>
+          <span>Flutter</span>
+          <span>PostgreSQL</span>
+          <span>Socket.IO</span>
+          <span>Cloudinary</span>
+          <span>Vercel</span>
+          <span>Render</span>
+        </div>
+      </div>
+      <div class="about-image" style="padding:1.5rem; text-align:left; display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start;">
+        <div id="code-display" style="font-family:'Cascadia Code','Fira Code','Consolas',monospace; font-size:.78rem; line-height:1.7; color:#a0a0b0;">
+          <div id="code-dots" style="display:flex; gap:6px; margin-bottom:.8rem;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:#27c93f;"></span>
+          </div>
+          <div id="code-lines"></div>
+          <span id="code-cursor" style="color:#818cf8; animation: blink .6s step-end infinite;">|</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio -->
+  <section id="portfolio">
+    <span class="section-label">✦ Recent Work</span>
+    <h2 class="section-title">Projects I've Built</h2>
+    <p class="section-sub">Real projects delivered to real clients. Each one built from scratch.</p>
+    <div class="portfolio-grid">
+      <div class="portfolio-card fade-in">
+        <span class="tag">Web App</span>
+        <h3>HeavenlyChat</h3>
+        <p>Real-time chat platform with messaging, file sharing, GIF picker, and admin controls. Used by 50+ users daily.</p>
+      </div>
+      <div class="portfolio-card fade-in">
+        <span class="tag">Website</span>
+        <h3>LolitaHeaven</h3>
+        <p>Premium content platform with gallery, video proofs, pricing tiers, and integrated analytics tracking system.</p>
+      </div>
+      <div class="portfolio-card fade-in">
+        <span class="tag">Bot</span>
+        <h3>Moderation Bot</h3>
+        <p>Discord moderation bot with auto-moderation, logging, welcome messages, and custom command system.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing">
+    <span class="section-label">✦ Pricing</span>
+    <h2 class="section-title">Flexible Pricing — Let's Talk</h2>
+    <p class="section-sub">I'll give you a good price based on your needs. Contact me and we'll work something out.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card standard fade-in">
+        <div class="plan">Standard</div>
+        <div class="price">$10<span>+</span></div>
+        <div class="desc">Starting price for small projects — can be adjusted.</div>
+        <ul>
+          <li>Single landing page</li>
+          <li>Basic bot script</li>
+          <li>Responsive UI design</li>
+          <li>1 day delivery</li>
+        </ul>
+        <a href="#contact" class="btn-primary">Order Now</a>
+      </div>
+      <div class="pricing-card featured fade-in">
+        <div class="plan">Extra</div>
+        <div class="price">$20<span>+</span></div>
+        <div class="desc">Starting price — let's discuss your scope and budget.</div>
+        <ul>
+          <li>Multi-page website</li>
+          <li>Full web app</li>
+          <li>Mobile app (basic)</li>
+          <li>Custom bot with DB</li>
+          <li>2 days delivery</li>
+        </ul>
+        <a href="#contact" class="btn-primary">Order Now</a>
+      </div>
+      <div class="pricing-card premium featured fade-in">
+        <div class="plan">Premium</div>
+        <div class="price">$50<span>+</span></div>
+        <div class="desc">Starting price for complex projects — always negotiable.</div>
+        <ul>
+          <li>Full platform / SaaS</li>
+          <li>Mobile app + backend</li>
+          <li>Custom software</li>
+          <li>Real-time features</li>
+          <li>Admin dashboard</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="#contact" class="btn-primary">Order Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / CTA -->
+  <section id="contact">
+    <div class="cta-section fade-in">
+      <h2>Ready to Build Something?</h2>
+      <p>Contact me directly on Telegram or Discord. I respond within 2 hours. No obligations, just a conversation about your project.</p>
+      <div class="contact-methods">
+        <a href="https://t.me/Adolf_hipster007" target="_blank" class="tg">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Telegram — @Adolf_hipster007
+        </a>
+        <a href="https://discord.com/users/idufyfud1973yehd" target="_blank" class="discord-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.198.3718.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.872.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
+          Discord — @idufyfud1973yehd
+        </a>
+      </div>
+      <div class="payment-info">
+        <p>&#x2705; Payment methods:</p>
+        <div class="methods">USDT (TRC-20) · Baridimob · PSN Gift Cards</div>
+        <p style="margin-top:.5rem; font-size:.8rem;">You only pay when you receive the finished project.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    HeavenlyDev &copy; 2026 — Built with &#x1F9E1; for the world
+  </footer>
+
+  <script>
+    // Word-by-word typing
+    const codeLines = [
+      '<span style="color:#818cf8;">import</span> <span style="color:#34d399;">{ Developer }</span> <span style="color:#818cf8;">from</span> <span style="color:#34d399;">"heavenlydev"</span>;<br>',
+      '<span style="color:#818cf8;">const</span> me <span style="color:#c084fc;">=</span> <span style="color:#818cf8;">new</span> <span style="color:#f59e0b;">Developer</span>(<span style="color:#f59e0b;">{</span><br>',
+      '<span style="padding-left:1.5rem;display:inline-block;"><span style="color:#ec4899;">name</span>: <span style="color:#34d399;">"HeavenlyDev"</span><span style="color:#f59e0b;">,</span></span><br>',
+      '<span style="padding-left:1.5rem;display:inline-block;"><span style="color:#ec4899;">skills</span>: <span style="color:#34d399;">["Web","Mobile","Bot"]</span><span style="color:#f59e0b;">,</span></span><br>',
+      '<span style="padding-left:1.5rem;display:inline-block;"><span style="color:#ec4899;">quality</span>: <span style="color:#34d399;">"premium"</span><span style="color:#f59e0b;">,</span></span><br>',
+      '<span style="padding-left:1.5rem;display:inline-block;"><span style="color:#ec4899;">price</span>: <span style="color:#34d399;">"good"</span></span><br>',
+      '<span style="color:#f59e0b;">});</span><br>',
+      '<span style="color:#818cf8;">me</span>.<span style="color:#f59e0b;">build</span>()<br>',
+      '<span style="color:#8888a0;">.then(() =&gt; console.log(</span><span style="color:#34d399;">"Delivered!"</span><span style="color:#8888a0;">));</span><br>',
+      '<span style="color:#8888a0;">// &gt; Delivered! &#x2728;</span>'
+    ];
+    let lineIdx = 0, typingStarted = false;
+    const el = document.getElementById('code-lines');
+    const cursor = document.getElementById('code-cursor');
+    const codeBox = document.getElementById('code-display');
+    function typeNext() {
+      if (lineIdx >= codeLines.length) { cursor.style.display = 'none'; return; }
+      el.insertAdjacentHTML('beforeend', codeLines[lineIdx]);
+      lineIdx++;
+      setTimeout(typeNext, 40);
+    }
+    const typeObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !typingStarted) {
+          typingStarted = true;
+          setTimeout(typeNext, 300);
+          typeObserver.disconnect();
+        }
+      });
+    }, { threshold: .3 });
+    typeObserver.observe(codeBox);
+
+    // Scroll animations
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: .1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Track click on contact buttons
+    document.addEventListener('click', function(e) {
+      const link = e.target.closest('a[href^="https://t.me"], a[href^="https://discord"]');
+      if (link) {
+        try {
+          fetch('https://heavenlychat-px42.onrender.com/api/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ site: 'project-service', event_type: 'click', path: '/', extra: { target: link.href } })
+          });
+        } catch(_) {}
+      }
+    });
+  </script>
+</body>
+</html>
