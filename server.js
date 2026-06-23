@@ -457,7 +457,7 @@ server.listen(PORT, () => {
           "**HeavenlyDev** — https://heavenlydev.vercel.app",
           "Websites, apps, bots & custom software — built fast, good prices.",
           "",
-          "**HeavenlyChat** — https://heavenlychat-px42.onrender.com",
+            "**HeavenlyChat** — https://heavenlychat.cyclic.app",
           "Real-time chat with file sharing, GIFs & no rules.",
           "",
           "**LolitaHeaven** — https://lolitaheaven.vercel.app",
